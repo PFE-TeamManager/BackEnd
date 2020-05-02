@@ -1,0 +1,12 @@
+Architecture de projet
+
+Base Donnée : 
+ - Membre peut étre dans plusieurs Equipe par exemple: un chef de projet
+ - Equipe peut avoir plusieurs Membres
+ - La relation entre Mmebre et Equipe est ManyToMany, qui selon DOCTRINE peut etre representé 
+par une table de jointure, ou des champs collections dans les deux tables.
+
+Symfony framework PHP : ensemble des expertises des développeurs experimentés, comme : architecture initial 
+du projet skeleton , design pattern organistation de projet
+
+Doctrine ORM : intermédiaire entre les entités (Models) et la base donnée

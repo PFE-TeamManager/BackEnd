@@ -1,0 +1,17 @@
+This project is for API By Symfony5
+First : install The symfony CLI
+Second create the project : composer create-project symfony/skeleton my_project_name
+symfony check:req
+
+run in the background : symfony serve -d
+Packages :
+   - composer require annotations
+   - composer require symfony/maker-bundle --dev
+   - composer require sec-checker
+
+Some Notes:
+- Check IdMembre dans l'equipe qui peut travailler sur le projet
+
+
+Maker Use List Command:
+- php bin/console list make
