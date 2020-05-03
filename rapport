@@ -6,6 +6,9 @@ Base Donnée :
  - La relation entre Mmebre et Equipe est ManyToMany, qui selon DOCTRINE peut etre representé 
 par une table de jointure, ou des champs collections dans les deux tables.
 
+Security :
+- Authentication : GuardAuthenticator
+
 Symfony framework PHP : ensemble des expertises des développeurs experimentés, comme : architecture initial 
 du projet skeleton , design pattern organistation de projet
 
