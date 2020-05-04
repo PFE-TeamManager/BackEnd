@@ -19,6 +19,24 @@ security:
         main:
             anonymous: true
 
+            guard:
+                authenticators:
+                    - App\Security\LoginAuthenticator
+                # redirect anonymous users to the login page
+                # entry_point: App\Security\LoginFormAuthenticator
+
+            logout:
+                path: app_logout
+
+            remember_me:
+                secret:   '%kernel.secret%'
+                lifetime: 2592000 # 30 days in seconds
+
+            #ROLE_ALLOWED_TO_SWITCH , ?_switch_user=email (in the url)
+            #the reason to use email is the app_user_provider
+            switch_user: true
+            #?_switch_user=_exit to exit the user mode
+
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication
 

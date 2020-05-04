@@ -12,6 +12,8 @@ Packages :
 Some Notes:
 - Check IdMembre dans l'equipe qui peut travailler sur le projet
 
-
 Maker Use List Command:
 - php bin/console list make
+
+List of routes:
+- php bin/console debug:router
