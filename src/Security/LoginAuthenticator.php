@@ -3,6 +3,7 @@
 namespace App\Security;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -29,10 +30,19 @@ class LoginAuthenticator extends AbstractGuardAuthenticator
 
     public function getCredentials(Request $request)
     {
-        return [
-            'email' => $request->request->get("email"),
-            'password' => $request->request->get("password")
+        $credentials = [
+            'email' => $request->request->get('email'),
+            'password' => $request->request->get('password')
         ];
+
+        //set the email into the session
+        //set session by email and LAST_USERNAME
+        $request->getSession()->set(
+            Security::LAST_USERNAME,
+            $credentials['email']
+        );
+
+        return $credentials;
     }
 
     public function getUser($credentials, UserProviderInterface $userProvider)

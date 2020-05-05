@@ -6,9 +6,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class IndexController extends AbstractController
+class HomeController extends AbstractController
 {
-    public function index()
+    public function home()
     {
         return new JsonResponse([
             'message' => "Index"

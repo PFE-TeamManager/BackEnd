@@ -15,6 +15,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 class MembreController extends AbstractController
 {
@@ -65,6 +66,32 @@ class MembreController extends AbstractController
         return new JsonResponse([
             'errors' => $errors
         ], 400);
+    }
+
+
+    
+    /**
+     * @IsGranted("ROLE_MEMBRE")
+     */
+    public function profile()
+    {
+        //controllers that extend AbstractController, 
+        //like our UserController does, have a method called getUser.
+
+        /*
+        ([object],
+        HTTP STATUS,
+        array of additional headers to use when outputting),
+        context : In this parameter we can pass an array with a groups key. 
+                The groups key should have an array of groups
+        */
+        return $this->json([
+            'user' => $this->getUser()
+        ],200,
+        [], 
+        [
+           'groups' => ['groupeserialized']
+        ]);
     }
 
 }

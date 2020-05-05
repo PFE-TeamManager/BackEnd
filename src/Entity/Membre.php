@@ -6,14 +6,17 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\MembreRepository")
+ * Groups is a way of identifying a set of properties that should be serialized
  */
 class Membre implements UserInterface
 {
     /**
      * @ORM\Id()
+     * @Groups("groupeserialized")
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
@@ -31,6 +34,7 @@ class Membre implements UserInterface
 
     /**
      * @ORM\Column(type="json")
+     * @Groups("groupeserialized")
      */
     private $roles = [];
 
@@ -71,6 +75,7 @@ class Membre implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
+     * @Groups("groupeserialized")
      */
     private $email;
 
