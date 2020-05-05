@@ -1,10 +1,20 @@
 Architecture de projet
 
+Avec ce schéma le côté serveur ne fait que retourner de l’information qui est récupérée et affichée par le client. 
+L’API côté serveur, n’a aucune responsabilité d’affichage sur le navigateur de l’utilisateur
+
 Base Donnée : 
  - Membre peut étre dans plusieurs Equipe par exemple: un chef de projet
  - Equipe peut avoir plusieurs Membres
  - La relation entre Mmebre et Equipe est ManyToMany, qui selon DOCTRINE peut etre representé 
 par une table de jointure, ou des champs collections dans les deux tables.
+
+In ManyToOne/OneToMany Relation : 
+    1 - Owning Side is The Entity who has ManyToOne relationships
+    2 - Inverse Side is The Entity who has OneToMany relationships
+
+Security :
+- Authentication : GuardAuthenticator
 
 Symfony framework PHP : ensemble des expertises des développeurs experimentés, comme : architecture initial 
 du projet skeleton , design pattern organistation de projet

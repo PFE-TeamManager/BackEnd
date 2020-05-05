@@ -5,37 +5,41 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\MembreRepository")
+ * Groups is a way of identifying a set of properties that should be serialized
  */
-class Membre
+class Membre implements UserInterface
 {
     /**
      * @ORM\Id()
+     * @Groups("groupeserialized")
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=150)
+     * @ORM\Column(type="string", length=150, nullable=true)
      */
     private $nom;
 
     /**
-     * @ORM\Column(type="string", length=150)
+     * @ORM\Column(type="string", length=150, nullable=true)
      */
     private $prenom;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Role")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\Column(type="json")
+     * @Groups("groupeserialized")
      */
-    private $IdRole;
+    private $roles = [];
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $date_embauchement;
 
@@ -45,7 +49,7 @@ class Membre
     private $date_resignation;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $created_at;
 
@@ -68,6 +72,22 @@ class Membre
      * @ORM\ManyToMany(targetEntity="App\Entity\Equipe", mappedBy="membres")
      */
     private $equipes;
+
+    /**
+     * @ORM\Column(type="string", length=255, unique=true)
+     * @Groups("groupeserialized")
+     */
+    private $email;
+
+    /**
+     * @ORM\Column(type="string", length=14, nullable=true, unique=true)
+     */
+    private $phone;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $password;
 
     public function __construct()
     {
@@ -104,14 +124,20 @@ class Membre
         return $this;
     }
 
-    public function getIdRole(): ?Role
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
     {
-        return $this->IdRole;
+        $roles = $this->roles;
+        $roles[] = 'ROLE_MEMBRE';
+
+        return array_unique($roles);
     }
 
-    public function setIdRole(Role $IdRole): self
+    public function setRoles(array $roles): self
     {
-        $this->IdRole = $IdRole;
+        $this->roles = $roles;
 
         return $this;
     }
@@ -147,7 +173,7 @@ class Membre
 
     public function setCreatedAt(\DateTimeInterface $created_at): self
     {
-        $this->created_at = $created_at;
+        $this->created_at = date("Y-m-d H:i:s");
 
         return $this;
     }
@@ -214,6 +240,73 @@ class Membre
         }
 
         return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): self
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+
+       /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUsername(): string
+    {
+        return (string) $this->email;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getSalt()
+    {
+        // not needed for apps that do not check user passwords
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials()
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 
 }
