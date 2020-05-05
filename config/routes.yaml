@@ -5,3 +5,11 @@ index:
 login:
    path: /login
    controller: App\Controller\SecurityController::login
+
+
+#****************Mmembre********
+registerMembre:
+   path: /register_member
+   controller: App\Controller\MembreController::register
+   methods:  [POST]
+#****************END Mmembre********

@@ -1,5 +1,8 @@
 Architecture de projet
 
+Avec ce schéma le côté serveur ne fait que retourner de l’information qui est récupérée et affichée par le client. 
+L’API côté serveur, n’a aucune responsabilité d’affichage sur le navigateur de l’utilisateur
+
 Base Donnée : 
  - Membre peut étre dans plusieurs Equipe par exemple: un chef de projet
  - Equipe peut avoir plusieurs Membres

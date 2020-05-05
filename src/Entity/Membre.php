@@ -20,12 +20,12 @@ class Membre implements UserInterface
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=150)
+     * @ORM\Column(type="string", length=150, nullable=true)
      */
     private $nom;
 
     /**
-     * @ORM\Column(type="string", length=150)
+     * @ORM\Column(type="string", length=150, nullable=true)
      */
     private $prenom;
 
@@ -35,7 +35,7 @@ class Membre implements UserInterface
     private $roles = [];
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $date_embauchement;
 
@@ -45,7 +45,7 @@ class Membre implements UserInterface
     private $date_resignation;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $created_at;
 
@@ -70,12 +70,12 @@ class Membre implements UserInterface
     private $equipes;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      */
     private $email;
 
     /**
-     * @ORM\Column(type="string", length=14, nullable=true)
+     * @ORM\Column(type="string", length=14, nullable=true, unique=true)
      */
     private $phone;
 
@@ -168,7 +168,7 @@ class Membre implements UserInterface
 
     public function setCreatedAt(\DateTimeInterface $created_at): self
     {
-        $this->created_at = $created_at;
+        $this->created_at = date("Y-m-d H:i:s");
 
         return $this;
     }
