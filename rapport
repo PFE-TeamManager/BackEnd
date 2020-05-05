@@ -6,6 +6,10 @@ Base Donnée :
  - La relation entre Mmebre et Equipe est ManyToMany, qui selon DOCTRINE peut etre representé 
 par une table de jointure, ou des champs collections dans les deux tables.
 
+In ManyToOne/OneToMany Relation : 
+    1 - Owning Side is The Entity who has ManyToOne relationships
+    2 - Inverse Side is The Entity who has OneToMany relationships
+
 Security :
 - Authentication : GuardAuthenticator
 

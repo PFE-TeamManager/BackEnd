@@ -30,10 +30,9 @@ class Membre implements UserInterface
     private $prenom;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Role")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\Column(type="json")
      */
-    private $IdRole;
+    private $roles = [];
 
     /**
      * @ORM\Column(type="datetime")
@@ -120,14 +119,20 @@ class Membre implements UserInterface
         return $this;
     }
 
-    public function getIdRole(): ?Role
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
     {
-        return $this->IdRole;
+        $roles = $this->roles;
+        $roles[] = 'ROLE_MEMBRE';
+
+        return array_unique($roles);
     }
 
-    public function setIdRole(Role $IdRole): self
+    public function setRoles(array $roles): self
     {
-        $this->IdRole = $IdRole;
+        $this->roles = $roles;
 
         return $this;
     }
@@ -272,25 +277,6 @@ class Membre implements UserInterface
     public function getUsername(): string
     {
         return (string) $this->email;
-    }
-
-    /**
-     * @see UserInterface
-     */
-    public function getRoles(): array
-    {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
-
-        return array_unique($roles);
-    }
-
-    public function setRoles(array $roles): self
-    {
-        $this->roles = $roles;
-
-        return $this;
     }
 
     /**
