@@ -2,11 +2,6 @@ index:
    path: /indexpage
    controller: App\Controller\IndexController::index
 
-login:
-   path: /login
-   controller: App\Controller\SecurityController::login
-
-
 #****************Mmembre********
 registerMembre:
    path: /register_member

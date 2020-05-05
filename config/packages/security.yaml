@@ -18,24 +18,27 @@ security:
             security: false
         main:
             anonymous: true
-
             guard:
                 authenticators:
-                    - App\Security\TokenAuthenticator
-                    # - App\Security\ApiTokenAuthenticator
-                # redirect anonymous users to the login page
-                # entry_point: App\Security\LoginFormAuthenticator
+                    - App\Security\LoginAuthenticator
 
-            logout:
-                path: app_logout
+            # guard:
+            #     authenticators:
+            #         # - App\Security\TokenAuthenticator
+            #         # - App\Security\ApiTokenAuthenticator
+            #     # redirect anonymous users to the login page
+            #     # entry_point: App\Security\LoginFormAuthenticator
 
-            remember_me:
-                secret:   '%kernel.secret%'
-                lifetime: 2592000 # 30 days in seconds
+            # logout:
+            #     path: app_logout
 
-            #ROLE_ALLOWED_TO_SWITCH , ?_switch_user=email (in the url)
-            #the reason to use email is the app_user_provider
-            switch_user: true
+            # remember_me:
+            #     secret:   '%kernel.secret%'
+            #     lifetime: 2592000 # 30 days in seconds
+
+            # #ROLE_ALLOWED_TO_SWITCH , ?_switch_user=email (in the url)
+            # #the reason to use email is the app_user_provider
+            # switch_user: true
             #?_switch_user=_exit to exit the user mode
 
             # activate different ways to authenticate

@@ -9,41 +9,19 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class SecurityController extends AbstractController
 {
-    private $membreRepository;
-    private $router;
-    private $csrfTokenManager;
-    
-    public function __construct(MembreRepository $membreRepository, RouterInterface $router, CsrfTokenManagerInterface $csrfTokenManager)
-    {
-        $this->membreRepository = $membreRepository;
-        $this->router = $router;
-        $this->csrfTokenManager = $csrfTokenManager;
-    }
 
-
+    /**
+     * @Route("/login", name="api_login", methods={"POST"})
+     */
     public function login(AuthenticationUtils $authenticationUtils)
     {
-        // get the login error if there is one
-        $error = $authenticationUtils->getLastAuthenticationError();
-        // last username entered by the user
-        $lastUsername = $authenticationUtils->getLastUsername();
-
-        // return new JsonResponse([
-        //     'message' => "Connected",
-        //     'username' => 
-        // ], 200);
-
-        // dd($error);
-        dd($lastUsername);
-        // exit();
-
-        // return $this->render('security/login.html.twig', [
-        //     'last_username' => $lastUsername,
-        //     'error'         => $error,
-        // ]);
+        return new JsonResponse([
+            'message' => "Login"
+        ], 200);
     }
 
 
