@@ -2,6 +2,7 @@
 
 namespace App\Security;
 
+use Firebase\JWT\JWT;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -35,13 +36,6 @@ class LoginAuthenticator extends AbstractGuardAuthenticator
             'password' => $request->request->get('password')
         ];
 
-        //set the email into the session
-        //set session by email and LAST_USERNAME
-        $request->getSession()->set(
-            Security::LAST_USERNAME,
-            $credentials['email']
-        );
-
         return $credentials;
     }
 
@@ -66,6 +60,19 @@ class LoginAuthenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
+        $expireTime = time() + 3600;
+        $tokenPayload = [
+            'user_id' => $token->getUser()->getId(),//ID need to be encrypted
+            'email'   => $token->getUser()->getEmail(),
+            'exp'     => $expireTime
+        ];
+
+        $jwt = JWT::encode($tokenPayload, getenv("JWT_SECRET"));
+
+        //we got https
+        $useHttps = true;
+        setcookie("jwt", $jwt, $expireTime, "/", "", $useHttps, true);
+
         return new JsonResponse([
             'result' => true
         ]);

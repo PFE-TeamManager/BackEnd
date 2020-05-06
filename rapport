@@ -3,6 +3,12 @@ Architecture de projet
 Avec ce schéma le côté serveur ne fait que retourner de l’information qui est récupérée et affichée par le client. 
 L’API côté serveur, n’a aucune responsabilité d’affichage sur le navigateur de l’utilisateur
 
+JWT is generally used as a way of storing the user’s session off of the server , 
+That way, your API can stay stateless.
+
+I’ve found that cookies are the safer way to go. If you make your cookie http only, 
+javascript will not be able to access it, meaning you would be safe against XSS attacks.
+
 Base Donnée : 
  - Membre peut étre dans plusieurs Equipe par exemple: un chef de projet
  - Equipe peut avoir plusieurs Membres
