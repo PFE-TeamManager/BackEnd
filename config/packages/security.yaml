@@ -21,11 +21,15 @@ security:
             guard:
                 authenticators:
                     - App\Security\LoginAuthenticator
-                # redirect anonymous users to the login page
-                # entry_point: App\Security\LoginFormAuthenticator
-
+                    - App\Security\JwtAuthenticator
+                # if there is no cookie , anyone should pass by LoginAuthenticator
+                entry_point: App\Security\LoginAuthenticator        
             logout:
                 path: app_logout
+                #clear the Token Cookie
+                success_handler: App\Security\JwtLogoutHandler # This need some searching
+                invalidate_session: false
+            stateless: true
 
             # remember_me:
             #     secret:   '%kernel.secret%'
