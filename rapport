@@ -19,8 +19,18 @@ In ManyToOne/OneToMany Relation :
     1 - Owning Side is The Entity who has ManyToOne relationships
     2 - Inverse Side is The Entity who has OneToMany relationships
 
+Mmember : 
+   - Register Member ...........DONE
+   - contrainte des dates ...........NOT YET
+   - update ...........NOT YET
+   - delete (deactivate) ...........NOT YET
 Security :
-- Authentication : GuardAuthenticator
+- Authentication : 
+   - LoginAuthenticator ...........DONE 
+   - JwtAuthenticator ...........DONE
+   - Send email of validation ...........NOT YET
+   - change password ...........NOT YET
+   - remember_me ???
 
 Symfony framework PHP : ensemble des expertises des développeurs experimentés, comme : architecture initial 
 du projet skeleton , design pattern organistation de projet
