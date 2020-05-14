@@ -54,19 +54,9 @@ class Membre implements UserInterface
     private $created_at;
 
     /**
-     * @ORM\Column(type="integer")
-     */
-    private $created_by;
-
-    /**
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $edited_at;
-
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    private $edited_by;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Equipe", mappedBy="membres")
@@ -178,18 +168,6 @@ class Membre implements UserInterface
         return $this;
     }
 
-    public function getCreatedBy(): ?int
-    {
-        return $this->created_by;
-    }
-
-    public function setCreatedBy(int $created_by): self
-    {
-        $this->created_by = $created_by;
-
-        return $this;
-    }
-
     public function getEditedAt(): ?\DateTimeInterface
     {
         return $this->edited_at;
@@ -198,18 +176,6 @@ class Membre implements UserInterface
     public function setEditedAt(?\DateTimeInterface $edited_at): self
     {
         $this->edited_at = $edited_at;
-
-        return $this;
-    }
-
-    public function getEditedBy(): ?\DateTimeInterface
-    {
-        return $this->edited_by;
-    }
-
-    public function setEditedBy(?\DateTimeInterface $edited_by): self
-    {
-        $this->edited_by = $edited_by;
 
         return $this;
     }

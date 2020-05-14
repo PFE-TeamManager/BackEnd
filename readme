@@ -25,6 +25,9 @@ Some Notes:
    openssl genrsa -out config/jwt/private.pem -aes256 512
    openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem
 - Remake The login following security part of symfony-api-platform
+- The Token must be generated in the login
+
+- createdBy should be treated like author_id in symfony-api-platform
 
 Maker Use List Command:
 - php bin/console list make
