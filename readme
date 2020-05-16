@@ -13,16 +13,13 @@ Packages :
    openssl genrsa -out config/jwt/private.pem -aes256 512
    openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem
 
-Some Notes 16/05/20:
+Notes for project and taches partie : 
 - Check IdMembre dans l'equipe qui peut travailler sur le projet
+
+Some Notes 16/05/20:
 - Must send Email when Membre is registered (sendEmail inside MemberRegisterSubscriber)
 - createdBy should be treated like author_id in symfony-api-platform
 - make the relation between user and team
-
-
-
-- Remake The login following security part of symfony-api-platform
-- The Token must be generated in the login
 
 
 

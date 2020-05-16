@@ -36,9 +36,19 @@ class Team
      */
     private $edited_by;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\User", mappedBy="teams")
+     */
+    private $users;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $enabled;
+
     public function __construct()
     {
-        $this->membres = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -78,6 +88,46 @@ class Team
     public function setEditedBy(?int $edited_by): self
     {
         $this->edited_by = $edited_by;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+            $user->addTeam($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        if ($this->users->contains($user)) {
+            $this->users->removeElement($user);
+            $user->removeTeam($this);
+        }
+
+        return $this;
+    }
+
+    public function getEnabled(): ?bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(bool $enabled): self
+    {
+        $this->enabled = $enabled;
 
         return $this;
     }

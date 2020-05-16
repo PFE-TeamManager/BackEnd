@@ -130,9 +130,19 @@ class User implements UserInterface
      */
     private $date_resignation;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Team", inversedBy="users")
+     */
+    private $teams;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $enabled;
+
     public function __construct()
     {
-        
+        $this->teams = new ArrayCollection();
     }
     
 
@@ -263,6 +273,44 @@ class User implements UserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection|Team[]
+     */
+    public function getTeams(): Collection
+    {
+        return $this->teams;
+    }
+
+    public function addTeam(Team $team): self
+    {
+        if (!$this->teams->contains($team)) {
+            $this->teams[] = $team;
+        }
+
+        return $this;
+    }
+
+    public function removeTeam(Team $team): self
+    {
+        if ($this->teams->contains($team)) {
+            $this->teams->removeElement($team);
+        }
+
+        return $this;
+    }
+
+    public function getEnabled(): ?bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(bool $enabled): self
+    {
+        $this->enabled = $enabled;
+
+        return $this;
     }
 
 }

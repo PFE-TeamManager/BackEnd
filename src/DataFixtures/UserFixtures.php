@@ -20,7 +20,7 @@ class UserFixtures extends BaseFixture
         $this->createMany(1, null, function($i) use ($manager) {
             
             $user = new User();
-            $user->setUsername($this->faker->name);
+            $user->setUsername(sprintf('admin%d', $i));
             $user->setEmail(sprintf('admin%d@example.com', $i));
 
             // $user->setPrenom($this->faker->firstName);
@@ -35,6 +35,7 @@ class UserFixtures extends BaseFixture
                 'secret123#'
             ));
             $user->setRoles(['ROLE_CHEF_PROJET','ROLE_DEV']);
+            $user->setEnabled(true);
 
             return $user;
         });
