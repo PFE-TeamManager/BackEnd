@@ -1,44 +1,31 @@
 security:
     encoders:
-        App\Entity\Membre:
-            # in symfony 4.3 put auto , will use the best available algo
-            algorithm: auto
-
+        App\Entity\User: bcrypt
         # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
-        # used to reload user from session & other features (e.g. switch_user)
-        app_user_provider:
+        database:
             entity:
-                class: App\Entity\Membre
-                property: email
-
+                class: App\Entity\User
+                property: username
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
+        api:
+            pattern: ^/api
+            stateless: true
             anonymous: true
+            json_login:
+                # Here authentication will happen (token generation)
+                # This path don't need to defined it , but must define it inside jwt.yaml
+                check_path: /api/login_check
+                # Handle successfull authentication
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                # Handle authentication failure (invalid credentials, no credentials etc).
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
             guard:
                 authenticators:
-                    - App\Security\LoginAuthenticator
-                    - App\Security\JwtAuthenticator
-                # if there is no cookie , anyone should pass by LoginAuthenticator
-                entry_point: App\Security\LoginAuthenticator        
-            logout:
-                path: app_logout
-                #clear the Token Cookie
-                success_handler: App\Security\JwtLogoutHandler # This need some searching
-                invalidate_session: false
-            stateless: true
-
-            # remember_me:
-            #     secret:   '%kernel.secret%'
-            #     lifetime: 2592000 # 30 days in seconds
-
-            # #ROLE_ALLOWED_TO_SWITCH , ?_switch_user=email (in the url)
-            # #the reason to use email is the app_user_provider
-            # switch_user: true
-            #?_switch_user=_exit to exit the user mode
+                    - lexik_jwt_authentication.jwt_token_authenticator
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication
@@ -49,5 +36,5 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/api/login,     roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        # - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }

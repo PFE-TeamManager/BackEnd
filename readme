@@ -9,25 +9,22 @@ Packages :
    - composer require symfony/maker-bundle --dev
    - composer require sec-checker
 
-Some Notes:
-- Check IdMembre dans l'equipe qui peut travailler sur le projet
-
-- Must create EventSubscriber so when Member register, send him email (sendEmail inside EventSubscriber) 
-   Take notes from UserRegisterSubscriber of symfony-api-platform
-
-- Must add Validator and Validation constraints using regular 
-  expressions in entities like Member for passwords checks etc..., 
-   @UniqueEntity("email", groups={"post"})
-  Take notes from User entity of symfony-api-platform
-
-- use this bundle for Token : composer require lexik/jwt-authentication-bundle
 - Must make the private key and public
    openssl genrsa -out config/jwt/private.pem -aes256 512
    openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem
+
+Some Notes 16/05/20:
+- Check IdMembre dans l'equipe qui peut travailler sur le projet
+- Must send Email when Membre is registered (sendEmail inside MemberRegisterSubscriber)
+- createdBy should be treated like author_id in symfony-api-platform
+- make the relation between user and team
+
+
+
 - Remake The login following security part of symfony-api-platform
 - The Token must be generated in the login
 
-- createdBy should be treated like author_id in symfony-api-platform
+
 
 Maker Use List Command:
 - php bin/console list make
