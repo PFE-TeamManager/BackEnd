@@ -2,15 +2,19 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use App\Entity\Interfaces\CreatorEntityInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
+ * @ApiResource()
  * @ORM\Entity(repositoryClass="App\Repository\TeamRepository")
  */
-class Team
+class Team implements CreatorEntityInterface
 {
     use TimestampableEntity;//this to generate created_At and updated_At
 
@@ -27,18 +31,24 @@ class Team
     private $teamName;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\ManyToMany(targetEntity="App\Entity\User", mappedBy="teams")
      */
-    private $created_By;
+    private $users;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="boolean")
      */
-    private $edited_by;
+    private $enabled;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="createdTeams")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $created_by;
 
     public function __construct()
     {
-        $this->membres = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -58,27 +68,62 @@ class Team
         return $this;
     }
 
-    public function getCreatedBy(): ?int
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsers(): Collection
     {
-        return $this->created_By;
+        return $this->users;
     }
 
-    public function setCreatedBy(int $created_By): self
+    public function addUser(User $user): self
     {
-        $this->created_By = $created_By;
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+            $user->addTeam($this);
+        }
 
         return $this;
     }
 
-    public function getEditedBy(): ?int
+    public function removeUser(User $user): self
     {
-        return $this->edited_by;
-    }
-
-    public function setEditedBy(?int $edited_by): self
-    {
-        $this->edited_by = $edited_by;
+        if ($this->users->contains($user)) {
+            $this->users->removeElement($user);
+            $user->removeTeam($this);
+        }
 
         return $this;
     }
+
+    public function getEnabled(): ?bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(bool $enabled): self
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    /**
+     * @return User
+     */
+    public function getCreatedBy(): ?User
+    {
+        return $this->created_by;
+    }
+
+    /**
+     * @param UserInterface $user
+     */
+    public function setCreatedBy(UserInterface $created_by): CreatorEntityInterface
+    {
+        $this->created_by = $created_by;
+
+        return $this;
+    }
+
 }

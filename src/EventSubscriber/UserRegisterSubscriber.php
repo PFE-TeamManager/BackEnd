@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\GetResponseForControllerResultEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\HttpKernel\Event\ViewEvent;
 
 class UserRegisterSubscriber implements EventSubscriberInterface
 {
@@ -38,7 +39,7 @@ class UserRegisterSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function hashPassword(GetResponseForControllerResultEvent $event)
+    public function hashPassword(ViewEvent $event)
     {
         $user = $event->getControllerResult();
         $method = $event->getRequest()->getMethod();
@@ -53,6 +54,8 @@ class UserRegisterSubscriber implements EventSubscriberInterface
         $user->setPassword(
             $this->passwordEncoder->encodePassword($user, $user->getPassword())
         );
+
+        $user->setEnabled(true);
 
         // Create confirmation token
         // $user->setConfirmationToken(
