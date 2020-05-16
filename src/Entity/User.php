@@ -140,9 +140,15 @@ class User implements UserInterface
      */
     private $enabled;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Team", mappedBy="created_by", orphanRemoval=true)
+     */
+    private $createdTeams;
+
     public function __construct()
     {
         $this->teams = new ArrayCollection();
+        $this->createdTeams = new ArrayCollection();
     }
     
 
@@ -309,6 +315,37 @@ class User implements UserInterface
     public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Team[]
+     */
+    public function getCreatedTeams(): Collection
+    {
+        return $this->createdTeams;
+    }
+
+    public function addCreatedTeam(Team $createdTeam): self
+    {
+        if (!$this->createdTeams->contains($createdTeam)) {
+            $this->createdTeams[] = $createdTeam;
+            $createdTeam->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCreatedTeam(Team $createdTeam): self
+    {
+        if ($this->createdTeams->contains($createdTeam)) {
+            $this->createdTeams->removeElement($createdTeam);
+            // set the owning side to null (unless already changed)
+            if ($createdTeam->getCreatedBy() === $this) {
+                $createdTeam->setCreatedBy(null);
+            }
+        }
 
         return $this;
     }

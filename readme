@@ -18,8 +18,7 @@ Notes for project and taches partie :
 
 Some Notes 16/05/20:
 - Must send Email when Membre is registered (sendEmail inside MemberRegisterSubscriber)
-- createdBy should be treated like author_id in symfony-api-platform
-- make the relation between user and team
+- register team like blogposts in symfony-api-platform
 
 
 
