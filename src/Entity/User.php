@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -18,6 +19,16 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Groups is a way of identifying a set of properties that should be serialized
  * @ApiResource(
+*           subresourceOperations={
+*               "api_users_created_teams_get_subresource" = {
+*                   "method"="GET",
+*                   "normalization_context"={  "groups"={"get-Teams-Created-By-User"}  }
+*               },
+*               "api_teams_users_get_subresource" = {
+*                   "method"="GET",
+*                   "normalization_context"={  "groups"={"get-Users-Of-Team"}  }                        
+*               }
+*           },
  *     collectionOperations={
  *          "post"={
  *             "denormalization_context"={
@@ -32,7 +43,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          "get"={
  *             "access_control"="is_granted('IS_AUTHENTICATED_FULLY')",
  *             "normalization_context"={
- *                 "groups"={"get"}
+ *                 "groups"={"get-User"}
  *             }
  *          },
  *          "put"={
@@ -56,9 +67,9 @@ class User implements UserInterface
 
     /**
      * @ORM\Id()
-     * @Groups("groupeserialized")
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"get-User","get-Teams-Created-By-User","get-Users-Of-Team"})
      */
     private $id;
 
@@ -66,6 +77,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(groups={"post"})
      * @Assert\Length(min=6, max=255, groups={"post"})
+     * @Groups({"get-User","get-Teams-Created-By-User","get-Users-Of-Team"})
      */
     private $username;
 
@@ -97,7 +109,7 @@ class User implements UserInterface
      * @Assert\Email(
      *     message = "The email '{{ value }}' is not a valid email."
      * )
-     * @Groups("groupeserialized")
+     * @Groups({"get-User","get-Team-With-Members"})
      */
     private $email;
 
@@ -112,7 +124,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="json")
-     * @Groups("groupeserialized")
+     * @Groups("get-User")
      */
     private $roles = [];
 
@@ -120,6 +132,7 @@ class User implements UserInterface
      * @ORM\Column(type="datetime", nullable=true)
      * @Assert\Date
      * @var string A "Y-m-d" formatted value
+     * @Groups("get-User")
      */
     private $date_embauchement;
 
@@ -132,6 +145,7 @@ class User implements UserInterface
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Team", inversedBy="users")
+     * @Groups("get-User")
      */
     private $teams;
 
@@ -142,6 +156,7 @@ class User implements UserInterface
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Team", mappedBy="created_by", orphanRemoval=true)
+     * @ApiSubresource()
      */
     private $createdTeams;
 

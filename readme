@@ -19,8 +19,13 @@ Notes for project and taches partie :
 Some Notes 16/05/20:
 - Must send Email when Membre is registered (sendEmail inside MemberRegisterSubscriber)
 - register team like blogposts in symfony-api-platform
+- register users inside team like comments inside blogposts @ApiSubresource
 
-
+POST /api/comments:
+{
+  "content": "commentaire 1",
+  "blogPost": "/api/blog_posts/313"//URI of blogpost
+}
 
 Maker Use List Command:
 - php bin/console list make
