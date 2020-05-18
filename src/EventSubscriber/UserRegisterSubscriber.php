@@ -46,7 +46,7 @@ class UserRegisterSubscriber implements EventSubscriberInterface
 
         //when we modify password , the membre is obliged to have another Token
         if ( !$user instanceof User || 
-             !in_array($method, [Request::METHOD_POST,Request::METHOD_PUT] ) ) {
+             !in_array($method, [Request::METHOD_POST] ) ) {
             return;
         }
 
