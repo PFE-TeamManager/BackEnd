@@ -19,6 +19,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Groups is a way of identifying a set of properties that should be serialized
  * Group get-Owner is for the profile of the user
+ * put-reset-password is a custom operation, that signify nothing to APIPlatform 
+ * so we must provide the method and path and controller
  * @ApiResource(
  *    subresourceOperations={
  *       "api_users_created_teams_get_subresource" = {
@@ -41,6 +43,16 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          }
  *      },
  *     itemOperations={
+ *         "put-reset-password"={
+ *             "access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object == user",
+ *             "method"="PUT",
+ *             "path"="/users/{id}/reset-password",
+ *             "controller"=ResetPasswordAction::class,
+ *             "denormalization_context"={
+ *                 "groups"={"put-reset-password"}
+ *             },
+ *             "validation_groups"={"put-reset-password"}
+ *          },
  *          "get"={
  *             "access_control"="is_granted('ROLE_MEMBRE') and object == user"
  *          },
@@ -52,17 +64,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *             "normalization_context"={
  *                 "groups"={"get-User"}
  *             }
- *          },
- *         "put-reset-password"={
- *             "access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object == user",
- *             "method"="PUT",
- *             "path"="/users/{id}/reset-password",
- *             "controller"=ResetPasswordAction::class,
- *             "denormalization_context"={
- *                 "groups"={"put-reset-password"}
- *             },
- *             "validation_groups"={"put-reset-password"}
- *         }
+ *          }
  *      }
  * )
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
