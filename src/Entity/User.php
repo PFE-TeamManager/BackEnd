@@ -18,6 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Groups is a way of identifying a set of properties that should be serialized
+ * Group get-Owner is for the profile of the user
  * @ApiResource(
  *    subresourceOperations={
  *       "api_users_created_teams_get_subresource" = {
@@ -41,13 +42,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  *      },
  *     itemOperations={
  *          "get"={
- *             "access_control"="is_granted('ROLE_MEMBRE') and object == user",
- *             "normalization_context"={
- *                 "groups"={"get-User"}
- *             }
+ *             "access_control"="is_granted('ROLE_MEMBRE') and object == user"
  *          },
  *          "put"={
- *             "access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object == user",
+ *             "access_control"="is_granted('ROLE_MEMBRE') and object == user",
  *             "denormalization_context"={
  *                 "groups"={"put"}
  *             },
@@ -69,7 +67,7 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"get-User","get-Teams-Created-By-User","get-Users-Of-Team"})
+     * @Groups({"get-Owner","get-Teams-Created-By-User","get-Users-Of-Team"})
      */
     private $id;
 
@@ -78,7 +76,7 @@ class User implements UserInterface
      * @Assert\NotBlank(groups={"create-User"})
      * @Assert\Length(min=6, max=255, groups={"create-User"})
      * @Assert\NotBlank(groups={"create-User"})
-     * @Groups({"create-User","get-User","get-Teams-Created-By-User","get-Users-Of-Team"})
+     * @Groups({"get-Owner","create-User","get-Teams-Created-By-User","get-Users-Of-Team"})
      */
     private $username;
 
@@ -110,7 +108,7 @@ class User implements UserInterface
      * @Assert\Email(
      *     message = "The email '{{ value }}' is not a valid email."
      * )
-     * @Groups({"create-User","get-User","get-Team-With-Members"})
+     * @Groups({"get-Owner","create-User","get-Team-With-Members"})
      */
     private $email;
 
@@ -120,21 +118,21 @@ class User implements UserInterface
      *     pattern="/^\(0\)[0-9]*$",
      *     message="Phone number should contain 9 digits"
      * )
-     * @Groups({"create-User","get-User","get-Team-With-Members"})
+     * @Groups({"create-User","get-Team-With-Members"})
      */
     private $phone;
 
     /**
      * @ORM\Column(type="json")
-     * @Groups("get-User")
+     * @Groups({"get-Owner"})
      */
     private $roles = [];
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      * @Assert\Date
+     * @Groups({"get-Owner"})
      * @var string A "Y-m-d" formatted value
-     * @Groups("get-User")
      */
     private $date_embauchement;
 
@@ -147,12 +145,13 @@ class User implements UserInterface
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Team", inversedBy="users")
-     * @Groups("get-User")
+     * @Groups({"get-Owner"})
      */
     private $teams;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups({"get-Owner"})
      */
     private $enabled;
 

@@ -32,7 +32,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
 *               }
 *           },
 *           collectionOperations={
-*               "post","get",
+*               "post"={
+*                   "access_control"="is_granted('ROLE_CHEF_PROJET')"
+*                },
+*               "get"
 *           }
 * )
 * @ORM\Entity(repositoryClass="App\Repository\TeamRepository")

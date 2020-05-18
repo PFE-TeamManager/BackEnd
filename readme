@@ -23,6 +23,8 @@ Notes for project and taches partie :
          - créer des équipes et créer des projets
          - assigner des membres aux équipes, assigner des équipes aux projets
 
+- If you need to show something to a ROLE ONLY , check the serializer
+
 Some Notes 17/05/20:
 - Must send Email when Membre is registered (sendEmail inside MemberRegisterSubscriber)
 - Verification Password by doctrine, unique username
