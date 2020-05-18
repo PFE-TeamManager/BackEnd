@@ -38,3 +38,9 @@ security:
     access_control:
         - { path: ^/api/login,     roles: IS_AUTHENTICATED_ANONYMOUSLY }
         # - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
+    role_hierarchy:
+        # in every registration, Role_Membre is given to the user
+        # ROLE_DEV & ROLE_CHEF_PROJET is given to the user by the admin
+        ROLE_CHEF_PROJET: [ROLE_DEV, ROLE_MEMBRE]
+        ROLE_ADMIN: ROLE_CHEF_PROJET
+        ROLE_SUPERADMIN: ROLE_ADMIN

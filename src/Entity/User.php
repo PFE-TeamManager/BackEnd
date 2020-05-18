@@ -19,29 +19,29 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Groups is a way of identifying a set of properties that should be serialized
  * @ApiResource(
-*           subresourceOperations={
-*               "api_users_created_teams_get_subresource" = {
-*                   "method"="GET",
-*                   "normalization_context"={  "groups"={"get-Teams-Created-By-User"}  }
-*               },
-*               "api_teams_users_get_subresource" = {
-*                   "method"="GET",
-*                   "normalization_context"={  "groups"={"get-Users-Of-Team"}  }                        
-*               }
-*           },
+ *    subresourceOperations={
+ *       "api_users_created_teams_get_subresource" = {
+ *           "method"="GET",
+ *           "normalization_context"={  "groups"={"get-Teams-Created-By-User"}  }
+ *         },
+ *       "api_teams_users_get_subresource" = {
+ *           "method"="GET",
+ *           "normalization_context"={  "groups"={"get-Users-Of-Team"}  }                        
+ *        }
+ *     },
  *     collectionOperations={
  *          "post"={
  *             "denormalization_context"={
- *                 "groups"={"post"}
+ *                 "groups"={"create-User"}
  *             },
  *             "normalization_context"={
- *                 "groups"={"get"}
+ *                 "groups"={"get-User"}
  *             }
  *          }
  *      },
  *     itemOperations={
  *          "get"={
- *             "access_control"="is_granted('IS_AUTHENTICATED_FULLY')",
+ *             "access_control"="is_granted('ROLE_MEMBRE') and object == user",
  *             "normalization_context"={
  *                 "groups"={"get-User"}
  *             }
@@ -52,7 +52,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *                 "groups"={"put"}
  *             },
  *             "normalization_context"={
- *                 "groups"={"get"}
+ *                 "groups"={"get-User"}
  *             }
  *          }
  *      }
@@ -75,32 +75,33 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank(groups={"post"})
-     * @Assert\Length(min=6, max=255, groups={"post"})
-     * @Groups({"get-User","get-Teams-Created-By-User","get-Users-Of-Team"})
+     * @Assert\NotBlank(groups={"create-User"})
+     * @Assert\Length(min=6, max=255, groups={"create-User"})
+     * @Assert\NotBlank(groups={"create-User"})
+     * @Groups({"create-User","get-User","get-Teams-Created-By-User","get-Users-Of-Team"})
      */
     private $username;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"post"})
-     * @Assert\NotBlank(groups={"post"})
+     * @Groups({"create-User"})
+     * @Assert\NotBlank(groups={"create-User"})
      * @Assert\Regex(
      *     pattern="/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{7,}/",
      *     message="Password must be seven characters long and contain at least one digit, one upper case letter and one lower case letter",
-     *     groups={"post"}
+     *     groups={"create-User"}
      * )
      */
     private $password;
 
     /**
-     * @Groups({"post"})
-     * @Assert\NotBlank(groups={"post"})
+     * @Assert\NotBlank(groups={"create-User"})
      * @Assert\Expression(
      *     "this.getPassword() === this.getRetypedPassword()",
      *     message="Passwords does not match",
-     *     groups={"post"}
+     *     groups={"create-User"}
      * )
+     * @Groups({"create-User"})
      */
     private $retypedPassword;
 
@@ -109,7 +110,7 @@ class User implements UserInterface
      * @Assert\Email(
      *     message = "The email '{{ value }}' is not a valid email."
      * )
-     * @Groups({"get-User","get-Team-With-Members"})
+     * @Groups({"create-User","get-User","get-Team-With-Members"})
      */
     private $email;
 
@@ -119,6 +120,7 @@ class User implements UserInterface
      *     pattern="/^\(0\)[0-9]*$",
      *     message="Phone number should contain 9 digits"
      * )
+     * @Groups({"create-User","get-User","get-Team-With-Members"})
      */
     private $phone;
 
@@ -220,7 +222,7 @@ class User implements UserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        $roles[] = 'ROLE_MEMBRE';
+        //$roles[] = 'ROLE_MEMBRE';
 
         return array_unique($roles);
     }

@@ -15,10 +15,17 @@ Packages :
 
 Notes for project and taches partie : 
 - Check IdMembre dans l'equipe qui peut travailler sur le projet
+- Le Profil d'un membre contient ses informations personnels, les équipes à qui il appartient,
+         les projets sur quoi il travaille et une partie de pointage( a reflechir )
+- Le Profil Admin aura tout ce qu'un membre posséde et une table des membres ou il peut désigner
+         des roles aux membres comme ROLE_DEV & ROLE_CHEF_PROJET
+- Le Profil d'un chef projet aura tout ce qu'un membre posséde et une partie ou il peut 
+         - créer des équipes et créer des projets
+         - assigner des membres aux équipes, assigner des équipes aux projets
 
-Some Notes 16/05/20:
+Some Notes 17/05/20:
 - Must send Email when Membre is registered (sendEmail inside MemberRegisterSubscriber)
-- register team like blogposts in symfony-api-platform
+- Verification Password by doctrine, unique username
 - register users inside team like comments inside blogposts @ApiSubresource
 
 POST /api/comments:
