@@ -15,6 +15,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Controller\ResetPasswordAction;
 
 /**
  * Groups is a way of identifying a set of properties that should be serialized
@@ -44,7 +45,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *      },
  *     itemOperations={
  *         "put-reset-password"={
- *             "access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object == user",
+ *             "access_control"="is_granted('ROLE_MEMBRE') and object == user",
  *             "method"="PUT",
  *             "path"="/users/{id}/reset-password",
  *             "controller"=ResetPasswordAction::class,
@@ -143,11 +144,6 @@ class User implements UserInterface
      * @UserPassword(groups={"put-reset-password"})
      */
     private $oldPassword;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $passwordChangeDate;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
@@ -441,15 +437,5 @@ class User implements UserInterface
     public function setOldPassword($oldPassword): void
     {
         $this->oldPassword = $oldPassword;
-    }
-
-    public function getPasswordChangeDate()
-    {
-        return $this->passwordChangeDate;
-    }
-
-    public function setPasswordChangeDate($passwordChangeDate): void
-    {
-        $this->passwordChangeDate = $passwordChangeDate;
     }
 }
