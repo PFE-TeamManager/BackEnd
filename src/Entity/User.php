@@ -146,6 +146,11 @@ class User implements UserInterface
     private $oldPassword;
 
     /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $passwordChangeDate;
+
+    /**
      * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\Email(
      *     message = "The email '{{ value }}' is not a valid email."
@@ -173,15 +178,14 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="datetime", nullable=true)
      * @Assert\Date
-     * @Groups({"get-Owner"})
-     * @var string A "Y-m-d" formatted value
+     * @Groups({"get-Owner","create-User"})
      */
     private $date_embauchement;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      * @Assert\Date
-     * @var string A "Y-m-d" formatted value
+     * @Groups({"get-Owner","create-User"})
      */
     private $date_resignation;
 
@@ -437,5 +441,15 @@ class User implements UserInterface
     public function setOldPassword($oldPassword): void
     {
         $this->oldPassword = $oldPassword;
+    }
+
+    public function getPasswordChangeDate()
+    {
+        return $this->passwordChangeDate;
+    }
+
+    public function setPasswordChangeDate($passwordChangeDate): void
+    {
+        $this->passwordChangeDate = $passwordChangeDate;
     }
 }

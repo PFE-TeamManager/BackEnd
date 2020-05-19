@@ -25,7 +25,10 @@ security:
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
             guard:
                 authenticators:
-                    - lexik_jwt_authentication.jwt_token_authenticator
+                    # jwt_token_authenticator is the Guard Authenticator
+                    # - lexik_jwt_authentication.jwt_token_authenticator
+                    # jwt_token_authenticator the Guard Authenticator is extended in the TokenAuthenticator
+                    - App\Security\TokenAuthenticator
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication

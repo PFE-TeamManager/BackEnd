@@ -29,6 +29,7 @@ Some Notes 17/05/20:
 - Must send Email when Membre is registered (sendEmail inside MemberRegisterSubscriber)
 - Verification Password by doctrine, unique username
 - register users inside team like comments inside blogposts @ApiSubresource
+- ResetPassword illogique date embauchement should be string
 
 POST /api/comments:
 {
