@@ -117,6 +117,33 @@ class User implements UserInterface
     private $retypedPassword;
 
     /**
+     * @ORM\Column(type="string", length=255, unique=true)
+     * @Assert\Email(
+     *     message = "The email '{{ value }}' is not a valid email."
+     * )
+     * @Groups({"get-Owner","create-User","get-Team-With-Members"})
+     */
+    private $email;
+
+    /**
+     * @ORM\Column(type="string", length=14, nullable=true, unique=true)
+     * @Assert\Regex(
+     *     pattern="/^\(0\)[0-9]*$",
+     *     message="Phone number should contain 9 digits"
+     * )
+     * @Groups({"create-User","get-Team-With-Members"})
+     */
+    private $phone;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Assert\Date
+     * @Groups({"get-Owner","create-User"})
+     */
+    private $date_embauchement;
+
+
+    /**
      * @Groups({"put-reset-password"})
      * @Assert\NotBlank(groups={"put-reset-password"})
      * @Assert\Regex(
@@ -151,25 +178,6 @@ class User implements UserInterface
     private $passwordChangeDate;
 
     /**
-     * @ORM\Column(type="string", length=255, unique=true)
-     * @Assert\Email(
-     *     message = "The email '{{ value }}' is not a valid email."
-     * )
-     * @Groups({"get-Owner","create-User","get-Team-With-Members"})
-     */
-    private $email;
-
-    /**
-     * @ORM\Column(type="string", length=14, nullable=true, unique=true)
-     * @Assert\Regex(
-     *     pattern="/^\(0\)[0-9]*$",
-     *     message="Phone number should contain 9 digits"
-     * )
-     * @Groups({"create-User","get-Team-With-Members"})
-     */
-    private $phone;
-
-    /**
      * @ORM\Column(type="json")
      * @Groups({"get-Owner"})
      */
@@ -178,14 +186,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="datetime", nullable=true)
      * @Assert\Date
-     * @Groups({"get-Owner","create-User"})
-     */
-    private $date_embauchement;
-
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     * @Assert\Date
-     * @Groups({"get-Owner","create-User"})
+     * @Groups({"get-Owner"})
      */
     private $date_resignation;
 
@@ -200,7 +201,6 @@ class User implements UserInterface
      * @ApiSubresource()
      */
     private $createdTeams;
-
 
     /**
      * @ORM\Column(type="boolean")
