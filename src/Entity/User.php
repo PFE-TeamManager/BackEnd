@@ -34,14 +34,10 @@ use App\Controller\ResetPasswordAction;
  *        }
  *     },
  *     collectionOperations={
- *          "post"={
- *             "denormalization_context"={
- *                 "groups"={"create-User"}
- *             },
- *             "normalization_context"={
- *                 "groups"={"get-User"}
- *             }
- *          }
+ *          "post"={  
+ *           "denormalization_context"={ "groups"={"create-User"} },
+ *           "normalization_context"={  "groups"={"get-User"}  } 
+ *         }
  *      },
  *     itemOperations={
  *         "put-reset-password"={
@@ -69,8 +65,8 @@ use App\Controller\ResetPasswordAction;
  *      }
  * )
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
- * @UniqueEntity("username", errorPath="username", groups={"post"})
- * @UniqueEntity("email", groups={"post"})
+ * @UniqueEntity("username", errorPath="username", groups={"create-User"})
+ * @UniqueEntity("email", groups={"create-User"})
  */
 class User implements UserInterface
 {
@@ -85,7 +81,7 @@ class User implements UserInterface
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank(groups={"create-User"})
      * @Assert\Length(min=6, max=255, groups={"create-User"})
      * @Assert\NotBlank(groups={"create-User"})
@@ -94,36 +90,34 @@ class User implements UserInterface
     private $username;
 
     /**
+     * @ORM\Column(type="string", length=255, unique=true)
+     * @Assert\Email(
+     *     message = "The email '{{ value }}' is not a valid email."
+     * )
+     * @Groups({"get-Owner","create-User","get-User","get-Team-With-Members"})
+     */
+    private $email;
+
+    /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"create-User"})
-     * @Assert\NotBlank(groups={"create-User"})
+     * @Assert\NotBlank()
      * @Assert\Regex(
      *     pattern="/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{7,}/",
      *     message="Password must be seven characters long and contain at least one digit, one upper case letter and one lower case letter",
-     *     groups={"create-User"}
      * )
      */
     private $password;
 
     /**
-     * @Assert\NotBlank(groups={"create-User"})
+     * @Groups({"create-User"})
+     * @Assert\NotBlank()
      * @Assert\Expression(
      *     "this.getPassword() === this.getRetypedPassword()",
      *     message="Passwords does not match",
-     *     groups={"create-User"}
      * )
-     * @Groups({"create-User"})
      */
     private $retypedPassword;
-
-    /**
-     * @ORM\Column(type="string", length=255, unique=true)
-     * @Assert\Email(
-     *     message = "The email '{{ value }}' is not a valid email."
-     * )
-     * @Groups({"get-Owner","create-User","get-Team-With-Members"})
-     */
-    private $email;
 
     /**
      * @ORM\Column(type="string", length=14, nullable=true, unique=true)
@@ -207,9 +201,10 @@ class User implements UserInterface
      * @Groups({"get-Owner"})
      */
     private $enabled;
-
+    
     /**
      * @ORM\Column(type="string", length=40, nullable=true)
+     * @Groups({"get-User"})
      */
     private $confirmationToken;
 
