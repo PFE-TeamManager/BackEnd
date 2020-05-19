@@ -4,19 +4,28 @@ namespace App\DataFixtures;
 
 use App\Entity\User;
 use App\DataFixtures\BaseFixture;
+use App\Security\TokenGenerator;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserFixtures extends BaseFixture
 {
+    /**
+     * @var TokenGenerator
+     */
+    private $tokenGenerator;
+
     private $passwordEncoder;
-    public function __construct(UserPasswordEncoderInterface $passwordEncoder)
+
+    public function __construct(UserPasswordEncoderInterface $passwordEncoder,TokenGenerator $tokenGenerator)
     {
         $this->passwordEncoder = $passwordEncoder;
+        $this->tokenGenerator = $tokenGenerator;
     }
 
     protected function loadData(ObjectManager $manager)
     {
+        $i = 2;
         $this->createMany(1, null, function($i) use ($manager) {
             
             $user = new User();
@@ -34,8 +43,14 @@ class UserFixtures extends BaseFixture
                 $user,
                 'secret123#'
             ));
-            $user->setRoles(['ROLE_CHEF_PROJET','ROLE_DEV']);
-            $user->setEnabled(true);
+            $user->setRoles(['ROLE_MEMBRE']);
+            $user->setEnabled(false);
+
+            
+            $user->setConfirmationToken(
+                $this->tokenGenerator->getRandomSecureToken()
+            );
+            
 
             return $user;
         });

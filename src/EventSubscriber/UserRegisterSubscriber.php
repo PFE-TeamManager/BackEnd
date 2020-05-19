@@ -59,9 +59,9 @@ class UserRegisterSubscriber implements EventSubscriberInterface
         $user->setRoles(["ROLE_MEMBRE"]);
 
         // Create confirmation token
-        // $user->setConfirmationToken(
-        //     $this->tokenGenerator->getRandomSecureToken()
-        // );
+        $user->setConfirmationToken(
+            $this->tokenGenerator->getRandomSecureToken()
+        );
 
         // Send e-mail here...
         //$this->mailer->sendConfirmationEmail($user);
