@@ -29,6 +29,7 @@ security:
                     # - lexik_jwt_authentication.jwt_token_authenticator
                     # jwt_token_authenticator the Guard Authenticator is extended in the TokenAuthenticator
                     - App\Security\TokenAuthenticator
+            user_checker: App\Security\UserEnabledChecker
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication

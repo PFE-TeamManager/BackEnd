@@ -196,21 +196,29 @@ class User implements UserInterface
     private $teams;
 
     /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Team", mappedBy="created_by", orphanRemoval=true)
+     * @ApiSubresource()
+     */
+    private $createdTeams;
+
+
+    /**
      * @ORM\Column(type="boolean")
      * @Groups({"get-Owner"})
      */
     private $enabled;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Team", mappedBy="created_by", orphanRemoval=true)
-     * @ApiSubresource()
+     * @ORM\Column(type="string", length=40, nullable=true)
      */
-    private $createdTeams;
+    private $confirmationToken;
 
     public function __construct()
     {
         $this->teams = new ArrayCollection();
         $this->createdTeams = new ArrayCollection();
+        $this->enabled = false;
+        $this->confirmationToken = null;
     }
     
 
@@ -369,18 +377,6 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getEnabled(): ?bool
-    {
-        return $this->enabled;
-    }
-
-    public function setEnabled(bool $enabled): self
-    {
-        $this->enabled = $enabled;
-
-        return $this;
-    }
-
     /**
      * @return Collection|Team[]
      */
@@ -452,4 +448,29 @@ class User implements UserInterface
     {
         $this->passwordChangeDate = $passwordChangeDate;
     }
+
+
+
+    public function getEnabled(): ?bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(bool $enabled): self
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    public function getConfirmationToken()
+    {
+        return $this->confirmationToken;
+    }
+
+    public function setConfirmationToken($confirmationToken): void
+    {
+        $this->confirmationToken = $confirmationToken;
+    }
+
 }

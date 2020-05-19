@@ -55,7 +55,7 @@ class UserRegisterSubscriber implements EventSubscriberInterface
             $this->passwordEncoder->encodePassword($user, $user->getPassword())
         );
 
-        $user->setEnabled(true);
+        $user->setEnabled(false);
         $user->setRoles(["ROLE_MEMBRE"]);
 
         // Create confirmation token
