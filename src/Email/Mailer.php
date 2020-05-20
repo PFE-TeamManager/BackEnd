@@ -3,6 +3,7 @@
 namespace App\Email;
 
 use App\Entity\User;
+use Twig\Environment;
 use Swift_Message;
 
 class Mailer
@@ -12,13 +13,13 @@ class Mailer
      */
     private $mailer;
     /**
-     * @var \Twig_Environment
+     * @var \Environment
      */
     private $twig;
 
     public function __construct(
         \Swift_Mailer $mailer,
-        \Twig_Environment $twig
+        Environment $twig
     )
     {
         $this->mailer = $mailer;
