@@ -11,6 +11,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseForControllerResultEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class UserRegisterSubscriber implements EventSubscriberInterface
 {
@@ -45,11 +46,20 @@ class UserRegisterSubscriber implements EventSubscriberInterface
         $method = $event->getRequest()->getMethod();
 
         //when we modify password , the membre is obliged to have another Token
-        if ( !$user instanceof User || 
-             !in_array($method, [Request::METHOD_POST] ) ) {
-            return;
+        if ( !$user instanceof User || !in_array( $method, [Request::METHOD_POST] ) ) {  
+            $passwordUser = $user->getPassword();
+            $retypedPasswordUser = $user->getRetypedPassword();
+
+            if( $passwordUser === $retypedPasswordUser ){
+                return;
+            }
+
+            //return;
         }
 
+        
+
+//dd($passwordUser);
         // It is a Membre, we need to hash password here
         $user->setPassword(
             $this->passwordEncoder->encodePassword($user, $user->getPassword())
@@ -65,5 +75,6 @@ class UserRegisterSubscriber implements EventSubscriberInterface
 
         // Send e-mail here...
         //$this->mailer->sendConfirmationEmail($user);
+
     }
 }

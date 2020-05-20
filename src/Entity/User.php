@@ -101,20 +101,21 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"create-User"})
-     * @Assert\NotBlank()
+     * @Assert\NotBlank( groups={"create-User"} )
      * @Assert\Regex(
      *     pattern="/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{7,}/",
      *     message="Password must be seven characters long and contain at least one digit, one upper case letter and one lower case letter",
+     *     groups={"create-User"}
      * )
      */
     private $password;
 
     /**
-     * @Groups({"create-User"})
-     * @Assert\NotBlank()
+     * @Assert\NotBlank( groups={"create-User"} )
      * @Assert\Expression(
-     *     "this.getPassword() === this.getRetypedPassword()",
-     *     message="Passwords does not match",
+     *      "this.getPassword() === this.getRetypedPassword()",
+     *      message="Passwords does not match",
+     *      groups={"create-User"}
      * )
      */
     private $retypedPassword;
@@ -131,10 +132,11 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Assert\Date
+     * @Assert\Date( groups={"create-User"} )
      * @Groups({"get-Owner","create-User"})
      */
     private $date_embauchement;
+
 
 
     /**
@@ -142,7 +144,7 @@ class User implements UserInterface
      * @Assert\NotBlank(groups={"put-reset-password"})
      * @Assert\Regex(
      *     pattern="/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{7,}/",
-     *     message="Password must be seven characters long and contain at least one digit, one upper case letter and one lower case letter",
+     *     message="New Password must be seven characters long and contain at least one digit, one upper case letter and one lower case letter",
      *     groups={"put-reset-password"}
      * )
      */
@@ -153,7 +155,7 @@ class User implements UserInterface
      * @Assert\NotBlank(groups={"put-reset-password"})
      * @Assert\Expression(
      *     "this.getNewPassword() === this.getNewRetypedPassword()",
-     *     message="Passwords does not match",
+     *     message="New Passwords does not match",
      *     groups={"put-reset-password"}
      * )
      */
@@ -165,6 +167,10 @@ class User implements UserInterface
      * @UserPassword(groups={"put-reset-password"})
      */
     private $oldPassword;
+
+
+
+
 
     /**
      * @ORM\Column(type="integer", nullable=true)
@@ -201,7 +207,7 @@ class User implements UserInterface
      * @Groups({"get-Owner"})
      */
     private $enabled;
-    
+
     /**
      * @ORM\Column(type="string", length=40, nullable=true)
      * @Groups({"get-User"})
