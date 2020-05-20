@@ -14,9 +14,9 @@ Packages :
    openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem
 
 Notes for project and taches partie : 
+
 - Retypedpassword in user registration not working, will be treated in the front
 - Check IdMembre dans l'equipe qui peut travailler sur le projet
-- Must send Email when Membre is registered (sendEmail inside MemberRegisterSubscriber)
 
 - Le Profil d'un membre contient ses informations personnels, les équipes à qui il appartient,
          les projets sur quoi il travaille et une partie de pointage( a reflechir )
@@ -28,9 +28,17 @@ Notes for project and taches partie :
 
 - If you need to show something to a ROLE ONLY , check the serializer
 
-Some Notes 17/05/20:
-
+Notes 17/05/20:
 - register users inside team like comments inside blogposts @ApiSubresource
+
+Notes 20/05/20:
+- keep the image logic , but u will do a library for images , images will be generated in the project
+- Sorting for Project,Comments, Tache & BUg Entity Like This attributes={ "order"={"published": "DESC"} },
+- Filters for Project,Comments, Tache & BUg Entity
+
+- Create Project Entity & apply the sorting,filtering on it, 
+and their creation resitricted to CHEF_PROJET ONLY
+
 
 
 POST /api/comments:

@@ -201,12 +201,23 @@ class User implements UserInterface
      */
     private $confirmationToken;
 
+
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Image")
+     * @ORM\JoinTable()
+     * @ApiSubresource()
+     * @Groups({"create-User", "get-User"})
+     */
+    private $images;
+
     public function __construct()
     {
         $this->teams = new ArrayCollection();
         $this->createdTeams = new ArrayCollection();
         $this->enabled = false;
         $this->confirmationToken = null;
+        $this->images = new ArrayCollection();
     }
     
 
@@ -449,6 +460,23 @@ class User implements UserInterface
     public function setConfirmationToken($confirmationToken): void
     {
         $this->confirmationToken = $confirmationToken;
+    }
+
+
+
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(Image $image)
+    {
+        $this->images->add($image);
+    }
+
+    public function removeImage(Image $image)
+    {
+        $this->images->removeElement($image);
     }
 
 }
