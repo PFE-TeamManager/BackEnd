@@ -47,14 +47,8 @@ class UserRegisterSubscriber implements EventSubscriberInterface
 
         //when we modify password , the membre is obliged to have another Token
         if ( !$user instanceof User || !in_array( $method, [Request::METHOD_POST] ) ) {  
-            $passwordUser = $user->getPassword();
-            $retypedPasswordUser = $user->getRetypedPassword();
 
-            if( $passwordUser === $retypedPasswordUser ){
-                return;
-            }
-
-            //return;
+            return;
         }
 
         

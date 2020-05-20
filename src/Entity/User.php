@@ -111,16 +111,6 @@ class User implements UserInterface
     private $password;
 
     /**
-     * @Assert\NotBlank( groups={"create-User"} )
-     * @Assert\Expression(
-     *      "this.getPassword() === this.getRetypedPassword()",
-     *      message="Passwords does not match",
-     *      groups={"create-User"}
-     * )
-     */
-    private $retypedPassword;
-
-    /**
      * @ORM\Column(type="string", length=14, nullable=true, unique=true)
      * @Assert\Regex(
      *     pattern="/^\(0\)[0-9]*$",
@@ -258,16 +248,6 @@ class User implements UserInterface
         $this->password = $password;
 
         return $this;
-    }
-
-    public function getRetypedPassword()
-    {
-        return $this->retypedPassword;
-    }
-
-    public function setRetypedPassword($retypedPassword): void
-    {
-        $this->retypedPassword = $retypedPassword;
     }
 
     /**

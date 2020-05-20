@@ -14,6 +14,7 @@ Packages :
    openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem
 
 Notes for project and taches partie : 
+- Retypedpassword in user registration not working, will be treated in the front
 - Check IdMembre dans l'equipe qui peut travailler sur le projet
 - Must send Email when Membre is registered (sendEmail inside MemberRegisterSubscriber)
 
@@ -30,7 +31,7 @@ Notes for project and taches partie :
 Some Notes 17/05/20:
 
 - register users inside team like comments inside blogposts @ApiSubresource
-- Retypedpassword in user registration not working
+
 
 POST /api/comments:
 {
