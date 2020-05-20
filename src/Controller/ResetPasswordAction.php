@@ -48,6 +48,7 @@ class ResetPasswordAction
         $encodedOldPassword = $this->userPasswordEncoder->isPasswordValid($data, $data->getOldPassword());
 
         if( $encodedOldPassword ) {
+            //The New Password Checks with regex, entity regex not working
             if( ($data->getNewPassword() == $data->getNewRetypedPassword()) ){
                 $data->setPassword(
                     $this->userPasswordEncoder->encodePassword(
