@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -12,17 +13,53 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Entity\Interfaces\CreatorEntityInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\RangeFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
+
 
 /**
+ * @ApiFilter(
+ *     SearchFilter::class,
+ *     properties={
+ *         "id": "exact",
+ *         "projectName": "partial",
+ *         "created_by.username": "partial"
+ *     }
+ * )
+ * @ApiFilter(
+ *     DateFilter::class,
+ *     properties={
+ *         "createdAt"
+ *     }
+ * )
+ * @ApiFilter(RangeFilter::class, properties={"id"})
+ * @ApiFilter(
+ *     OrderFilter::class,
+ *     properties={
+ *         "id",
+ *         "projectName",
+ *         "createdAt"
+ *     },
+ *     arguments={"orderParameterName"="_order"}
+ * )
+ * @ApiFilter(PropertyFilter::class, arguments={
+ *     "parameterName": "properties",
+ *     "overrideDefaultProperties": false,
+ *     "whitelist": {"id", "projectName"}
+ * })
  * @ApiResource(
  *     attributes={
- *         "order"={"created_at": "DESC"}
+ *         "order"={"createdAt": "DESC"}
  *     },
  *     collectionOperations={
  *       "post"={  
  *           "denormalization_context"={ "groups"={"create-Project"} },
  *           "normalization_context"={  "groups"={"get-Project"}  } 
- *        }
+ *        },
+ *        "get"
  *     }
  * )
  * @ORM\Entity(repositoryClass="App\Repository\ProjectRepository")
