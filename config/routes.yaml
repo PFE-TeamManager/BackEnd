@@ -3,12 +3,12 @@ index:
    controller: App\Controller\HomeController::home
 
 #****************Mmembre********
-api_profile:
-   path: /profile
-   controller: App\Controller\MembreController::profile
+# api_profile:
+#    path: /profile
+#    controller: App\Controller\MembreController::profile
 
-registerMembre:
-   path: /register_member
-   controller: App\Controller\MembreController::register
-   methods:  [POST]
+# registerMembre:
+#    path: /register_member
+#    controller: App\Controller\MembreController::register
+#    methods:  [POST]
 #****************END Mmembre********

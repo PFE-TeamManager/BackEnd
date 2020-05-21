@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -14,41 +15,58 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Controller\ResetPasswordAction;
 
 /**
  * Groups is a way of identifying a set of properties that should be serialized
+ * Group get-Owner is for the profile of the user
+ * put-reset-password is a custom operation, that signify nothing to APIPlatform 
+ * so we must provide the method and path and controller
  * @ApiResource(
+ *    subresourceOperations={
+ *       "api_users_created_teams_get_subresource" = {
+ *           "method"="GET",
+ *           "normalization_context"={  "groups"={"get-Teams-Created-By-User"}  }
+ *         },
+ *       "api_teams_users_get_subresource" = {
+ *           "method"="GET",
+ *           "normalization_context"={  "groups"={"get-Users-Of-Team"}  }                        
+ *        }
+ *     },
  *     collectionOperations={
- *          "post"={
- *             "denormalization_context"={
- *                 "groups"={"post"}
- *             },
- *             "normalization_context"={
- *                 "groups"={"get"}
- *             }
- *          }
+ *          "post"={  
+ *           "denormalization_context"={ "groups"={"create-User"} },
+ *           "normalization_context"={  "groups"={"get-User"}  } 
+ *         }
  *      },
  *     itemOperations={
+ *         "put-reset-password"={
+ *             "access_control"="is_granted('ROLE_MEMBRE') and object == user",
+ *             "method"="PUT",
+ *             "path"="/users/{id}/reset-password",
+ *             "controller"=ResetPasswordAction::class,
+ *             "denormalization_context"={
+ *                 "groups"={"put-reset-password"}
+ *             },
+ *             "validation_groups"={"put-reset-password"}
+ *          },
  *          "get"={
- *             "access_control"="is_granted('IS_AUTHENTICATED_FULLY')",
- *             "normalization_context"={
- *                 "groups"={"get"}
- *             }
+ *             "access_control"="is_granted('ROLE_MEMBRE') and object == user"
  *          },
  *          "put"={
- *             "access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object == user",
+ *             "access_control"="is_granted('ROLE_MEMBRE') and object == user",
  *             "denormalization_context"={
  *                 "groups"={"put"}
  *             },
  *             "normalization_context"={
- *                 "groups"={"get"}
+ *                 "groups"={"get-User"}
  *             }
  *          }
  *      }
  * )
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
- * @UniqueEntity("username", errorPath="username", groups={"post"})
- * @UniqueEntity("email", groups={"post"})
+ * @UniqueEntity("username", errorPath="username", groups={"create-User"})
+ * @UniqueEntity("email", groups={"create-User"})
  */
 class User implements UserInterface
 {
@@ -56,50 +74,40 @@ class User implements UserInterface
 
     /**
      * @ORM\Id()
-     * @Groups("groupeserialized")
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"get-Owner","get-Teams-Created-By-User","get-Users-Of-Team"})
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank(groups={"post"})
-     * @Assert\Length(min=6, max=255, groups={"post"})
+     * @ORM\Column(type="string", length=255, unique=true)
+     * @Assert\NotBlank(groups={"create-User"})
+     * @Assert\Length(min=6, max=255, groups={"create-User"})
+     * @Assert\NotBlank(groups={"create-User"})
+     * @Groups({"get-Owner","create-User","get-Teams-Created-By-User","get-Users-Of-Team"})
      */
     private $username;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Groups({"post"})
-     * @Assert\NotBlank(groups={"post"})
-     * @Assert\Regex(
-     *     pattern="/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{7,}/",
-     *     message="Password must be seven characters long and contain at least one digit, one upper case letter and one lower case letter",
-     *     groups={"post"}
-     * )
-     */
-    private $password;
-
-    /**
-     * @Groups({"post"})
-     * @Assert\NotBlank(groups={"post"})
-     * @Assert\Expression(
-     *     "this.getPassword() === this.getRetypedPassword()",
-     *     message="Passwords does not match",
-     *     groups={"post"}
-     * )
-     */
-    private $retypedPassword;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\Email(
      *     message = "The email '{{ value }}' is not a valid email."
      * )
-     * @Groups("groupeserialized")
+     * @Groups({"get-Owner","create-User","get-User","get-Team-With-Members"})
      */
     private $email;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Groups({"create-User"})
+     * @Assert\NotBlank( groups={"create-User"} )
+     * @Assert\Regex(
+     *     pattern="/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{7,}/",
+     *     message="Password must be seven characters long and contain at least one digit, one upper case letter and one lower case letter"
+     * )
+     */
+    private $password;
 
     /**
      * @ORM\Column(type="string", length=14, nullable=true, unique=true)
@@ -107,48 +115,109 @@ class User implements UserInterface
      *     pattern="/^\(0\)[0-9]*$",
      *     message="Phone number should contain 9 digits"
      * )
+     * @Groups({"create-User","get-Team-With-Members"})
      */
     private $phone;
 
     /**
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Assert\Date( groups={"create-User"} )
+     * @Groups({"get-Owner","create-User"})
+     */
+    private $date_embauchement;
+
+
+
+    /**
+     * @Groups({"put-reset-password"})
+     * @Assert\NotBlank(groups={"put-reset-password"})
+     * @Assert\Regex(
+     *     pattern="/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{7,}/",
+     *     message="New Password must be seven characters long and contain at least one digit, one upper case letter and one lower case letter"
+     * )
+     */
+    private $newPassword;
+
+    /**
+     * @Groups({"put-reset-password"})
+     * @Assert\NotBlank(groups={"put-reset-password"})
+     * @Assert\Expression(
+     *     "this.getNewPassword() === this.getNewRetypedPassword()",
+     *     message="New Passwords does not match"
+     * )
+     */
+    private $newRetypedPassword;
+
+    /**
+     * @Groups({"put-reset-password"})
+     * @Assert\NotBlank(groups={"put-reset-password"})
+     * @UserPassword(groups={"put-reset-password"})
+     */
+    private $oldPassword;
+
+
+
+
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $passwordChangeDate;
+
+    /**
      * @ORM\Column(type="json")
-     * @Groups("groupeserialized")
+     * @Groups({"get-Owner"})
      */
     private $roles = [];
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      * @Assert\Date
-     * @var string A "Y-m-d" formatted value
-     */
-    private $date_embauchement;
-
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     * @Assert\Date
-     * @var string A "Y-m-d" formatted value
+     * @Groups({"get-Owner"})
      */
     private $date_resignation;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Team", inversedBy="users")
+     * @Groups({"get-Owner"})
      */
     private $teams;
 
     /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Team", mappedBy="created_by", orphanRemoval=true)
+     * @ApiSubresource()
+     */
+    private $createdTeams;
+
+    /**
      * @ORM\Column(type="boolean")
+     * @Groups({"get-Owner"})
      */
     private $enabled;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Team", mappedBy="created_by", orphanRemoval=true)
+     * @ORM\Column(type="string", length=40, nullable=true)
+     * @Groups({"get-User"})
      */
-    private $createdTeams;
+    private $confirmationToken;
+
+
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Image")
+     * @ORM\JoinTable()
+     * @ApiSubresource()
+     * @Groups({"create-User", "get-User"})
+     */
+    private $images;
 
     public function __construct()
     {
         $this->teams = new ArrayCollection();
         $this->createdTeams = new ArrayCollection();
+        $this->enabled = false;
+        $this->confirmationToken = null;
+        $this->images = new ArrayCollection();
     }
     
 
@@ -189,23 +258,13 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getRetypedPassword()
-    {
-        return $this->retypedPassword;
-    }
-
-    public function setRetypedPassword($retypedPassword): void
-    {
-        $this->retypedPassword = $retypedPassword;
-    }
-
     /**
      * @see UserInterface
      */
     public function getRoles(): array
     {
         $roles = $this->roles;
-        $roles[] = 'ROLE_MEMBRE';
+        //$roles[] = 'ROLE_MEMBRE';
 
         return array_unique($roles);
     }
@@ -307,18 +366,6 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getEnabled(): ?bool
-    {
-        return $this->enabled;
-    }
-
-    public function setEnabled(bool $enabled): self
-    {
-        $this->enabled = $enabled;
-
-        return $this;
-    }
-
     /**
      * @return Collection|Team[]
      */
@@ -348,6 +395,88 @@ class User implements UserInterface
         }
 
         return $this;
+    }
+
+
+    public function getNewPassword(): ?string
+    {
+        return $this->newPassword;
+    }
+
+    public function setNewPassword($newPassword): void
+    {
+        $this->newPassword = $newPassword;
+    }
+
+    public function getNewRetypedPassword(): ?string
+    {
+        return $this->newRetypedPassword;
+    }
+
+    public function setNewRetypedPassword($newRetypedPassword): void
+    {
+        $this->newRetypedPassword = $newRetypedPassword;
+    }
+
+    public function getOldPassword(): ?string
+    {
+        return $this->oldPassword;
+    }
+
+    public function setOldPassword($oldPassword): void
+    {
+        $this->oldPassword = $oldPassword;
+    }
+
+    public function getPasswordChangeDate()
+    {
+        return $this->passwordChangeDate;
+    }
+
+    public function setPasswordChangeDate($passwordChangeDate): void
+    {
+        $this->passwordChangeDate = $passwordChangeDate;
+    }
+
+
+
+    public function getEnabled(): ?bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(bool $enabled): self
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    public function getConfirmationToken()
+    {
+        return $this->confirmationToken;
+    }
+
+    public function setConfirmationToken($confirmationToken): void
+    {
+        $this->confirmationToken = $confirmationToken;
+    }
+
+
+
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(Image $image)
+    {
+        $this->images->add($image);
+    }
+
+    public function removeImage(Image $image)
+    {
+        $this->images->removeElement($image);
     }
 
 }

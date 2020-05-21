@@ -3,17 +3,43 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use App\Entity\Interfaces\CreatorEntityInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
+
+// To find the correct operation name you may use bin/console debug:router
+// To get the users insted of their URI , we used the subresourceOperations & 
+// new name of the url of the subresource "api_teams_users_get_subresource"
+// and we decided on wich context to return data (normalization_context), 
+// then create the group of the properties we want to return, 
+// include the group in this entity and the other entity wich contain the subressources
 
 /**
- * @ApiResource()
- * @ORM\Entity(repositoryClass="App\Repository\TeamRepository")
- */
+* @ApiResource(
+*           subresourceOperations={
+*               "api_users_created_teams_get_subresource" = {
+*                   "method"="GET",
+*                   "normalization_context"={  "groups"={"get-Teams-Created-By-User"}  }
+*               },
+*               "api_teams_users_get_subresource" = {
+*                   "method"="GET",
+*                   "normalization_context"={  "groups"={"get-Users-Of-Team"}  }                        
+*               }
+*           },
+*           collectionOperations={
+*               "post"={
+*                   "access_control"="is_granted('ROLE_CHEF_PROJET')"
+*                },
+*               "get"
+*           }
+* )
+* @ORM\Entity(repositoryClass="App\Repository\TeamRepository")
+*/
 class Team implements CreatorEntityInterface
 {
     use TimestampableEntity;//this to generate created_At and updated_At
@@ -21,17 +47,20 @@ class Team implements CreatorEntityInterface
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer").
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=200)
+     * @Groups({"get-User","get-Teams-Created-By-User","get-Users-Of-Team"})
      */
     private $teamName;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\User", mappedBy="teams")
+     * @Groups({"get-Teams-Created-By-User","get-Users-Of-Team"})
+     * @ApiSubresource()
      */
     private $users;
 
@@ -43,6 +72,7 @@ class Team implements CreatorEntityInterface
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="createdTeams")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups("get-Users-Of-Team")
      */
     private $created_by;
 
