@@ -78,7 +78,7 @@ class Project implements CreatorEntityInterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank(groups={"create-Project"})
+     * @Assert\NotBlank()
      * @Groups({"create-Project","get-Project"})
      */
     private $projectName;
