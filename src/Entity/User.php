@@ -35,9 +35,10 @@ use App\Controller\ResetPasswordAction;
  *     },
  *     collectionOperations={
  *          "post"={  
- *           "denormalization_context"={ "groups"={"create-User"} },
- *           "normalization_context"={  "groups"={"get-User"}  } 
- *         }
+ *              "denormalization_context"={ "groups"={"create-User"} },
+ *              "normalization_context"={  "groups"={"get-User"}  },
+ *              "validation_groups"={"create-User"}
+ *           }
  *      },
  *     itemOperations={
  *         "put-reset-password"={
