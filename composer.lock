@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3aa50839d446cfc95748dee091a37d2a",
+    "content-hash": "90df2a39c118274855cb5a7128ee24d1",
     "packages": [
         {
             "name": "api-platform/api-pack",
