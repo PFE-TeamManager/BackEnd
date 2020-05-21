@@ -84,7 +84,6 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank(groups={"create-User"})
      * @Assert\Length(min=6, max=255, groups={"create-User"})
-     * @Assert\NotBlank(groups={"create-User"})
      * @Groups({"get-Owner","create-User","get-Teams-Created-By-User","get-Users-Of-Team"})
      */
     private $username;
