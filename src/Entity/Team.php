@@ -76,6 +76,11 @@ class Team implements CreatorEntityInterface
      */
     private $created_by;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Project", inversedBy="Teams")
+     */
+    private $project;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -152,6 +157,18 @@ class Team implements CreatorEntityInterface
     public function setCreatedBy(UserInterface $created_by): CreatorEntityInterface
     {
         $this->created_by = $created_by;
+
+        return $this;
+    }
+
+    public function getProject(): ?Project
+    {
+        return $this->project;
+    }
+
+    public function setProject(?Project $project): self
+    {
+        $this->project = $project;
 
         return $this;
     }

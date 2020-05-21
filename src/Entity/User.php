@@ -211,6 +211,11 @@ class User implements UserInterface
      */
     private $images;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Project", mappedBy="created_by", orphanRemoval=true)
+     */
+    private $projects;
+
     public function __construct()
     {
         $this->teams = new ArrayCollection();
@@ -218,6 +223,7 @@ class User implements UserInterface
         $this->enabled = false;
         $this->confirmationToken = null;
         $this->images = new ArrayCollection();
+        $this->projects = new ArrayCollection();
     }
     
 
@@ -477,6 +483,37 @@ class User implements UserInterface
     public function removeImage(Image $image)
     {
         $this->images->removeElement($image);
+    }
+
+    /**
+     * @return Collection|Project[]
+     */
+    public function getProjects(): Collection
+    {
+        return $this->projects;
+    }
+
+    public function addProject(Project $project): self
+    {
+        if (!$this->projects->contains($project)) {
+            $this->projects[] = $project;
+            $project->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProject(Project $project): self
+    {
+        if ($this->projects->contains($project)) {
+            $this->projects->removeElement($project);
+            // set the owning side to null (unless already changed)
+            if ($project->getCreatedBy() === $this) {
+                $project->setCreatedBy(null);
+            }
+        }
+
+        return $this;
     }
 
 }
