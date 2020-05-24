@@ -52,7 +52,10 @@ use App\Controller\ResetPasswordAction;
  *             "validation_groups"={"put-reset-password"}
  *          },
  *          "get"={
- *             "access_control"="is_granted('ROLE_MEMBRE') and object == user"
+ *             "access_control"="is_granted('ROLE_MEMBRE') and object == user",
+ *             "normalization_context"={
+ *                 "groups"={"get-Project"}
+ *             }
  *          },
  *          "put"={
  *             "access_control"="is_granted('ROLE_MEMBRE') and object == user",
@@ -77,7 +80,7 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"get-Owner","get-Teams-Created-By-User","get-Users-Of-Team"})
+     * @Groups({"get-Owner","get-Teams-Created-By-User","get-Users-Of-Team","get-Project"})
      */
     private $id;
 
@@ -85,7 +88,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank(groups={"create-User"})
      * @Assert\Length(min=6, max=255, groups={"create-User"})
-     * @Groups({"get-Owner","create-User","get-Teams-Created-By-User","get-Users-Of-Team"})
+     * @Groups({"get-Owner","create-User","get-Teams-Created-By-User","get-Users-Of-Team","get-Project"})
      */
     private $username;
 

@@ -145,6 +145,7 @@ class Team implements CreatorEntityInterface
 
     /**
      * @return User
+     * @Groups("get-Users-Of-Team")
      */
     public function getCreatedBy(): ?User
     {

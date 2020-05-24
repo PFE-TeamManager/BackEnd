@@ -60,7 +60,12 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
  *           "normalization_context"={  "groups"={"get-Project"}  } 
  *        },
  *        "get"
- *     }
+ *     },
+ *    itemOperations={
+ *        "get"={
+ *           "normalization_context"={  "groups"={"get-Project"}  }
+ *        }
+ *    }
  * )
  * @ORM\Entity(repositoryClass="App\Repository\ProjectRepository")
  * @UniqueEntity("projectName", errorPath="projectName", groups={"create-Project"})
@@ -73,6 +78,7 @@ class Project implements CreatorEntityInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"get-Project"})
      */
     private $id;
 
@@ -84,6 +90,7 @@ class Project implements CreatorEntityInterface
     private $projectName;
 
     /**
+     * @Groups({"get-Project"})
      * @ORM\OneToMany(targetEntity="App\Entity\Team", mappedBy="project")
      */
     private $Teams;
@@ -94,6 +101,7 @@ class Project implements CreatorEntityInterface
     private $enabled;
 
     /**
+     * @Groups({"get-Project"})
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="projects")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -166,6 +174,7 @@ class Project implements CreatorEntityInterface
 
     /**
      * @return User
+     * @Groups({"get-Project"})
      */
     public function getCreatedBy(): ?User
     {
