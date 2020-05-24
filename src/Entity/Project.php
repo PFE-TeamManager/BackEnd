@@ -190,4 +190,22 @@ class Project implements CreatorEntityInterface
 
         return $this;
     }
+
+    /**
+     * @return \DateTime
+     * @Groups({"get-Project"})
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @return \DateTime
+     * @Groups({"get-Project"})
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
 }

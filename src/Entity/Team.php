@@ -174,4 +174,22 @@ class Team implements CreatorEntityInterface
         return $this;
     }
 
+    /**
+     * @return \DateTime
+     * @Groups({"get-Users-Of-Team"})
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @return \DateTime
+     * @Groups({"get-Users-Of-Team"})
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
+
 }
