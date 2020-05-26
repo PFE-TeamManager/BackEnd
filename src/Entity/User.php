@@ -80,7 +80,7 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"get-Owner","get-Teams-Created-By-User","get-Users-Of-Team","get-Project"})
+     * @Groups({"get-Owner","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task"})
      */
     private $id;
 
@@ -88,7 +88,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank(groups={"create-User"})
      * @Assert\Length(min=6, max=255, groups={"create-User"})
-     * @Groups({"get-Owner","create-User","get-Teams-Created-By-User","get-Users-Of-Team","get-Project"})
+     * @Groups({"get-Owner","create-User","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task"})
      */
     private $username;
 
@@ -219,6 +219,11 @@ class User implements UserInterface
      */
     private $projects;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Task", mappedBy="created_by", orphanRemoval=true)
+     */
+    private $tasks;
+
     public function __construct()
     {
         $this->teams = new ArrayCollection();
@@ -227,6 +232,7 @@ class User implements UserInterface
         $this->confirmationToken = null;
         $this->images = new ArrayCollection();
         $this->projects = new ArrayCollection();
+        $this->tasks = new ArrayCollection();
     }
     
 
@@ -513,6 +519,37 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($project->getCreatedBy() === $this) {
                 $project->setCreatedBy(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Task[]
+     */
+    public function getTasks(): Collection
+    {
+        return $this->tasks;
+    }
+
+    public function addTask(Task $task): self
+    {
+        if (!$this->tasks->contains($task)) {
+            $this->tasks[] = $task;
+            $task->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTask(Task $task): self
+    {
+        if ($this->tasks->contains($task)) {
+            $this->tasks->removeElement($task);
+            // set the owning side to null (unless already changed)
+            if ($task->getCreatedBy() === $this) {
+                $task->setCreatedBy(null);
             }
         }
 

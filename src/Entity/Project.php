@@ -55,14 +55,19 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
  *         "order"={"createdAt": "DESC"}
  *     },
  *     collectionOperations={
- *       "post"={  
+ *       "post"={
+ *           "access_control"="is_granted('ROLE_CHEF_PROJET')",  
  *           "denormalization_context"={ "groups"={"create-Project"} },
  *           "normalization_context"={  "groups"={"get-Project"}  } 
  *        },
- *        "get"
+ *        "get"={
+ *           "access_control"="is_granted('ROLE_DEV')",
+ *           "normalization_context"={  "groups"={"get-Project"}  }
+ *        }
  *     },
  *    itemOperations={
  *        "get"={
+ *           "access_control"="is_granted('ROLE_DEV')",
  *           "normalization_context"={  "groups"={"get-Project"}  }
  *        }
  *    }
@@ -78,14 +83,14 @@ class Project implements CreatorEntityInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"get-Project"})
+     * @Groups({"get-Project","create-Task"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
-     * @Groups({"create-Project","get-Project"})
+     * @Groups({"create-Project","get-Project","create-Task"})
      */
     private $projectName;
 
@@ -107,9 +112,15 @@ class Project implements CreatorEntityInterface
      */
     private $created_by;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Task", mappedBy="IdProject")
+     */
+    private $tasks;
+
     public function __construct()
     {
         $this->Teams = new ArrayCollection();
+        $this->tasks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -207,5 +218,36 @@ class Project implements CreatorEntityInterface
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * @return Collection|Task[]
+     */
+    public function getTasks(): Collection
+    {
+        return $this->tasks;
+    }
+
+    public function addTask(Task $task): self
+    {
+        if (!$this->tasks->contains($task)) {
+            $this->tasks[] = $task;
+            $task->setIdProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTask(Task $task): self
+    {
+        if ($this->tasks->contains($task)) {
+            $this->tasks->removeElement($task);
+            // set the owning side to null (unless already changed)
+            if ($task->getIdProject() === $this) {
+                $task->setIdProject(null);
+            }
+        }
+
+        return $this;
     }
 }

@@ -1,0 +1,172 @@
+<?php
+
+namespace App\Entity;
+
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Component\Validator\Constraints as Assert;
+use App\Entity\Interfaces\CreatorEntityInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
+
+/**
+ * @ApiResource(
+ *           attributes={
+ *              "order"={"createdAt": "DESC"}
+ *           },
+ *           collectionOperations={
+ *               "post"={
+ *                   "access_control"="is_granted('ROLE_CHEF_PROJET')",
+ *                   "denormalization_context"={ "groups"={"create-Task"} },
+ *                   "normalization_context"={  "groups"={"get-Task"}  }
+ *                },
+ *               "get"={
+ *                   "access_control"="is_granted('ROLE_DEV')",
+ *                   "normalization_context"={  "groups"={"get-Task"}  }
+ *               }
+ *           },
+ *           itemOperations={
+ *              "get"={
+ *                  "access_control"="is_granted('ROLE_DEV')",
+ *                  "normalization_context"={  "groups"={"get-Task"}  }
+ *              }
+ *           }
+ * )
+ * @ORM\Entity(repositoryClass="App\Repository\TaskRepository")
+ * @UniqueEntity("TaskTitle", errorPath="TaskTitle", groups={"create-Task"})
+ */
+class Task implements CreatorEntityInterface
+{
+    use TimestampableEntity;//this to generate created_At and updated_At
+
+    /**
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
+     * @ORM\Column(type="integer")
+     * @Groups({"get-Task"})
+     */
+    private $id;
+
+    /**
+     * @ORM\Column(type="string", length=255, unique=true)
+     * @Assert\NotBlank(groups={"create-Task"})
+     * @Groups({"get-Task","create-Task"})
+     */
+    private $TaskTitle;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     * @Groups({"get-Task","create-Task"})
+     */
+    private $TaskDescription;
+
+    /**
+     * @Groups({"get-Task"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Project", inversedBy="tasks")
+     */
+    private $IdProject;
+
+    /**
+     * @Groups({"get-Task"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="tasks")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $created_by;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $enabled;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getTaskTitle(): ?string
+    {
+        return $this->TaskTitle;
+    }
+
+    public function setTaskTitle(string $TaskTitle): self
+    {
+        $this->TaskTitle = $TaskTitle;
+
+        return $this;
+    }
+
+    public function getTaskDescription(): ?string
+    {
+        return $this->TaskDescription;
+    }
+
+    public function setTaskDescription(?string $TaskDescription): self
+    {
+        $this->TaskDescription = $TaskDescription;
+
+        return $this;
+    }
+
+    public function getIdProject(): ?Project
+    {
+        return $this->IdProject;
+    }
+
+    public function setIdProject(?Project $IdProject): self
+    {
+        $this->IdProject = $IdProject;
+
+        return $this;
+    }
+
+    /**
+     * @return User
+     * @Groups({"get-Task"})
+     */
+    public function getCreatedBy(): ?User
+    {
+        return $this->created_by;
+    }
+
+    /**
+     * @param UserInterface $user
+     */
+    public function setCreatedBy(UserInterface $created_by): CreatorEntityInterface
+    {
+        $this->created_by = $created_by;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     * @Groups({"get-Task"})
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @return \DateTime
+     * @Groups({"get-Task"})
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
+
+    public function getEnabled(): ?bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(bool $enabled): self
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+}
