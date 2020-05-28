@@ -40,7 +40,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *         }
  *     },
  *     denormalizationContext={
- *         "groups"={"post"}
+ *         "groups"={"create-Comment"}
  *     }
  * )
  * @ORM\Entity(repositoryClass="App\Repository\CommentRepository")

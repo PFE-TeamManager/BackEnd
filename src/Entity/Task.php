@@ -17,7 +17,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * @ApiResource(
  *           attributes={
- *              "order"={"createdAt": "DESC"}, "maximum_items_per_page"=30}
+ *              "order"={"createdAt": "DESC"}, "maximum_items_per_page"=30
  *           },
  *           collectionOperations={
  *               "post"={
