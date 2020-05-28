@@ -23,17 +23,17 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *               "post"={
  *                   "security"="is_granted('ROLE_CHEF_PROJET')", "security_message"="Only CHEF can add projects.",
  *                   "denormalization_context"={ "groups"={"create-Task"} },
- *                   "normalization_context"={  "groups"={"get-Task"}  }
+ *                   "normalization_context"={  "groups"={"get-Task-with-comments"}  }
  *                },
  *               "get"={
  *                   "security"="is_granted('ROLE_DEV')", "security_message"="Sorry, but you should be a developper.",
- *                   "normalization_context"={  "groups"={"get-Task"}  }
+ *                   "normalization_context"={  "groups"={"get-Task-with-comments"}  }
  *               }
  *           },
  *           itemOperations={
  *              "get"={
  *                  "security"="is_granted('ROLE_DEV')", "security_message"="Sorry, but you should be a developper.",
- *                  "normalization_context"={  "groups"={"get-Task"}  }
+ *                  "normalization_context"={  "groups"={"get-Task-with-comments"}  }
  *              }
  *           }
  * )
