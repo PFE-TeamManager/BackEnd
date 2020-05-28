@@ -50,7 +50,7 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/api/login,     roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api,       roles: ROLE_MEMBRE }
+        # - { path: ^/api,       roles: ROLE_MEMBRE }
     role_hierarchy:
         # in every registration, Role_Membre is given to the user
         # ROLE_DEV & ROLE_CHEF_PROJET is given to the user by the admin
