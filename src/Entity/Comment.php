@@ -12,26 +12,36 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ApiResource(
- *           attributes={
- *              "order"={"createdAt": "DESC"}
- *           },
- *           collectionOperations={
- *               "post"={
- *                   "security"="is_granted('ROLE_DEV')", "security_message"="Only Developper can add projects.",
- *                   "denormalization_context"={ "groups"={"create-Comment"} },
- *                   "normalization_context"={  "groups"={"get-Comment"}  }
- *                },
- *               "get"={
- *                   "security"="is_granted('ROLE_DEV')", "security_message"="Sorry, but you should be a developper.",
- *                   "normalization_context"={  "groups"={"get-Comment"}  }
- *               }
- *           },
- *           itemOperations={
- *              "get"={
- *                  "security"="is_granted('ROLE_DEV')", "security_message"="Sorry, but you should be a developper.",
- *                  "normalization_context"={  "groups"={"get-Comment"}  }
- *              }
- *           }
+ *     attributes={
+ *         "order"={"createdAt": "DESC"},
+ *         "pagination_client_enabled"=true,
+ *         "pagination_client_items_per_page"=true
+ *     },
+ *     itemOperations={
+ *         "get",
+ *         "put"={
+ *             "security"="is_granted('ROLE_DEV') and object.getCreatedBy() == user)",
+ *             "security_message"="Sorry, but you should be a developper.",
+ *         }
+ *     },
+ *     collectionOperations={
+ *         "get",
+ *         "post"={
+ *             "security"="is_granted('ROLE_DEV')", 
+ *             "security_message"="Sorry, but you should be a developper.",
+ *             "normalization_context"={
+ *                 "groups"={"get-Comment"}
+ *             }
+ *         },
+ *         "api_tasks_comments_get_subresource"={
+ *             "normalization_context"={
+ *                 "groups"={"get-Comment"}
+ *             }
+ *         }
+ *     },
+ *     denormalizationContext={
+ *         "groups"={"post"}
+ *     }
  * )
  * @ORM\Entity(repositoryClass="App\Repository\CommentRepository")
  */
@@ -43,6 +53,7 @@ class Comment implements CreatorEntityInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"get-comment"})
      */
     private $id;
 
@@ -61,7 +72,7 @@ class Comment implements CreatorEntityInterface
     private $created_by;
 
     /**
-     * @Groups({"get-Comment","create-Comment"})
+     * @Groups({"create-Comment"})
      * @ORM\ManyToOne(targetEntity="App\Entity\Task", inversedBy="comments")
      * @ORM\JoinColumn(nullable=false)
      */

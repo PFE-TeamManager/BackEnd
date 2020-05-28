@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -16,7 +17,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * @ApiResource(
  *           attributes={
- *              "order"={"createdAt": "DESC"}
+ *              "order"={"createdAt": "DESC"}, "maximum_items_per_page"=30}
  *           },
  *           collectionOperations={
  *               "post"={
@@ -47,31 +48,31 @@ class Task implements CreatorEntityInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"get-Task","get-Comment"})
+     * @Groups({"get-Task-with-comments"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank(groups={"create-Task"})
-     * @Groups({"get-Task","get-Comment","create-Task"})
+     * @Groups({"get-Task-with-comments","create-Task"})
      */
     private $TaskTitle;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"get-Task","create-Task"})
+     * @Groups({"get-Task-with-comments","create-Task"})
      */
     private $TaskDescription;
 
     /**
-     * @Groups({"get-Task"})
+     * @Groups({"get-Task-with-comments"})
      * @ORM\ManyToOne(targetEntity="App\Entity\Project", inversedBy="tasks")
      */
     private $IdProject;
 
     /**
-     * @Groups({"get-Task"})
+     * @Groups({"get-Task-with-comments"})
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="tasks")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -83,7 +84,9 @@ class Task implements CreatorEntityInterface
     private $enabled;
 
     /**
+     * @Groups({"get-Task-with-comments"})
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="Task", orphanRemoval=true)
+     * @ApiSubresource()
      */
     private $comments;
 
@@ -135,7 +138,7 @@ class Task implements CreatorEntityInterface
 
     /**
      * @return User
-     * @Groups({"get-Task"})
+     * @Groups({"get-Task-with-comments"})
      */
     public function getCreatedBy(): ?User
     {
@@ -154,7 +157,7 @@ class Task implements CreatorEntityInterface
 
     /**
      * @return \DateTime
-     * @Groups({"get-Task"})
+     * @Groups({"get-Task-with-comments"})
      */
     public function getCreatedAt()
     {
@@ -163,7 +166,7 @@ class Task implements CreatorEntityInterface
 
     /**
      * @return \DateTime
-     * @Groups({"get-Task"})
+     * @Groups({"get-Task-with-comments"})
      */
     public function getUpdatedAt()
     {
