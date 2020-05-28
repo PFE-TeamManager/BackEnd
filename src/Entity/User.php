@@ -80,7 +80,7 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"get-Owner","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task"})
+     * @Groups({"get-Owner","get-Comment","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task"})
      */
     private $id;
 
@@ -88,7 +88,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank(groups={"create-User"})
      * @Assert\Length(min=6, max=255, groups={"create-User"})
-     * @Groups({"get-Owner","create-User","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task"})
+     * @Groups({"get-Owner","get-Comment","create-User","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task"})
      */
     private $username;
 
@@ -224,6 +224,11 @@ class User implements UserInterface
      */
     private $tasks;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="created_by", orphanRemoval=true)
+     */
+    private $comments;
+
     public function __construct()
     {
         $this->teams = new ArrayCollection();
@@ -233,6 +238,7 @@ class User implements UserInterface
         $this->images = new ArrayCollection();
         $this->projects = new ArrayCollection();
         $this->tasks = new ArrayCollection();
+        $this->comments = new ArrayCollection();
     }
     
 
@@ -550,6 +556,37 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($task->getCreatedBy() === $this) {
                 $task->setCreatedBy(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Comment[]
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments[] = $comment;
+            $comment->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): self
+    {
+        if ($this->comments->contains($comment)) {
+            $this->comments->removeElement($comment);
+            // set the owning side to null (unless already changed)
+            if ($comment->getCreatedBy() === $this) {
+                $comment->setCreatedBy(null);
             }
         }
 
