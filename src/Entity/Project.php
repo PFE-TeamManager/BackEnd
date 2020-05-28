@@ -56,18 +56,18 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
  *     },
  *     collectionOperations={
  *       "post"={
- *           "access_control"="is_granted('ROLE_CHEF_PROJET')",  
+ *           "security"="is_granted('ROLE_CHEF_PROJET')", "security_message"="Only CHEF can add projects.",  
  *           "denormalization_context"={ "groups"={"create-Project"} },
  *           "normalization_context"={  "groups"={"get-Project"}  } 
  *        },
  *        "get"={
- *           "access_control"="is_granted('ROLE_DEV')",
+ *           "security"="is_granted('ROLE_DEV')", "security_message"="Sorry, but you should be a developper.",
  *           "normalization_context"={  "groups"={"get-Project"}  }
  *        }
  *     },
  *    itemOperations={
  *        "get"={
- *           "access_control"="is_granted('ROLE_DEV')",
+ *           "security"="is_granted('ROLE_DEV')", "security_message"="Sorry, but you should be a developper.",
  *           "normalization_context"={  "groups"={"get-Project"}  }
  *        }
  *    }

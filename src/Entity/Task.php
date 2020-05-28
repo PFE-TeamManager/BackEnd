@@ -18,18 +18,18 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *           },
  *           collectionOperations={
  *               "post"={
- *                   "access_control"="is_granted('ROLE_CHEF_PROJET')",
+ *                   "security"="is_granted('ROLE_CHEF_PROJET')", "security_message"="Only CHEF can add projects.",
  *                   "denormalization_context"={ "groups"={"create-Task"} },
  *                   "normalization_context"={  "groups"={"get-Task"}  }
  *                },
  *               "get"={
- *                   "access_control"="is_granted('ROLE_DEV')",
+ *                   "security"="is_granted('ROLE_DEV')", "security_message"="Sorry, but you should be a developper.",
  *                   "normalization_context"={  "groups"={"get-Task"}  }
  *               }
  *           },
  *           itemOperations={
  *              "get"={
- *                  "access_control"="is_granted('ROLE_DEV')",
+ *                  "security"="is_granted('ROLE_DEV')", "security_message"="Sorry, but you should be a developper.",
  *                  "normalization_context"={  "groups"={"get-Task"}  }
  *              }
  *           }
