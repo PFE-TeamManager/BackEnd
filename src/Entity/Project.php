@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -83,14 +84,14 @@ class Project implements CreatorEntityInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"get-Project","create-Task"})
+     * @Groups({"get-Project"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
-     * @Groups({"create-Project","get-Project","create-Task"})
+     * @Groups({"create-Project","get-Project"})
      */
     private $projectName;
 
@@ -114,6 +115,7 @@ class Project implements CreatorEntityInterface
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Task", mappedBy="IdProject")
+     * @ApiSubresource()
      */
     private $tasks;
 

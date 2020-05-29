@@ -66,8 +66,9 @@ class Task implements CreatorEntityInterface
     private $TaskDescription;
 
     /**
-     * @Groups({"get-Task-with-comments"})
+     * @Groups({"create-Task"})
      * @ORM\ManyToOne(targetEntity="App\Entity\Project", inversedBy="tasks")
+     * @ORM\JoinColumn(nullable=false)
      */
     private $IdProject;
 
