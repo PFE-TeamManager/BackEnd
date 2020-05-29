@@ -13,7 +13,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * @ApiResource(
  *     attributes={
- *         "order"={"createdAt": "DESC"},
+ *         "order"={"createdAt": "DESC"}, "maximum_items_per_page"=3,
  *         "pagination_client_enabled"=true,
  *         "pagination_client_items_per_page"=true
  *     },

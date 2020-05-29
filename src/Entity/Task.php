@@ -17,7 +17,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * @ApiResource(
  *           attributes={
- *              "order"={"createdAt": "DESC"}, "maximum_items_per_page"=30
+ *              "order"={"createdAt": "DESC"}
  *           },
  *           collectionOperations={
  *               "post"={
@@ -38,7 +38,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *           }
  * )
  * @ORM\Entity(repositoryClass="App\Repository\TaskRepository")
- * @UniqueEntity("TaskTitle", errorPath="TaskTitle", groups={"create-Task"})
  */
 class Task implements CreatorEntityInterface
 {
@@ -53,7 +52,7 @@ class Task implements CreatorEntityInterface
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255, unique=true)
+     * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(groups={"create-Task"})
      * @Groups({"get-Task-with-comments","create-Task"})
      */
