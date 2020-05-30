@@ -94,6 +94,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
+     * @Assert\NotBlank(groups={"create-User"})
      * @Assert\Email(
      *     message = "The email '{{ value }}' is not a valid email."
      * )
