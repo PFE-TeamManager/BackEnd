@@ -11,11 +11,11 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
-
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Controller\ResetPasswordAction;
+use App\Controller\UsersDatableAction;
 
 /**
  * Groups is a way of identifying a set of properties that should be serialized
@@ -38,7 +38,16 @@ use App\Controller\ResetPasswordAction;
  *              "denormalization_context"={ "groups"={"create-User"} },
  *              "normalization_context"={  "groups"={"get-User"}  },
  *              "validation_groups"={"create-User"}
- *           }
+ *           },
+ *          "get"={
+ *             "access_control"="is_granted('ROLE_CHEF_PROJET')",
+ *             "method"="GET",
+ *             "path"="/usersdatatable",
+ *             "controller"=UsersDatableAction::class,
+ *             "normalization_context"={
+ *                 "groups"={"get-Users-datatable"}
+ *             }
+ *          }
  *      },
  *     itemOperations={
  *         "put-reset-password"={
@@ -80,7 +89,7 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"get-Owner","get-Comment","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task-with-comments"})
+     * @Groups({"get-Users-datatable","get-Owner","get-Comment","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task-with-comments"})
      */
     private $id;
 
@@ -88,7 +97,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank(groups={"create-User"})
      * @Assert\Length(min=6, max=255, groups={"create-User"})
-     * @Groups({"get-Owner","get-Comment","create-User","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task-with-comments"})
+     * @Groups({"get-Users-datatable","get-Owner","get-Comment","create-User","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task-with-comments"})
      */
     private $username;
 
@@ -98,7 +107,7 @@ class User implements UserInterface
      * @Assert\Email(
      *     message = "The email '{{ value }}' is not a valid email."
      * )
-     * @Groups({"get-Owner","create-User","get-User","get-Team-With-Members"})
+     * @Groups({"get-Users-datatable","get-Owner","create-User","get-User","get-Team-With-Members"})
      */
     private $email;
 
@@ -126,7 +135,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="datetime", nullable=true)
      * @Assert\Date( groups={"create-User"} )
-     * @Groups({"get-Owner","create-User"})
+     * @Groups({"get-Users-datatable","get-Owner","create-User"})
      */
     private $date_embauchement;
 
@@ -170,7 +179,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="json")
-     * @Groups({"get-Owner"})
+     * @Groups({"get-Users-datatable","get-Owner"})
      */
     private $roles = [];
 
@@ -183,7 +192,7 @@ class User implements UserInterface
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Team", inversedBy="users")
-     * @Groups({"get-Owner"})
+     * @Groups({"get-Users-datatable","get-Owner"})
      */
     private $teams;
 
@@ -195,7 +204,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"get-Owner"})
+     * @Groups({"get-Users-datatable","get-Owner"})
      */
     private $enabled;
 
