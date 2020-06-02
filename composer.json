@@ -6,6 +6,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "api-platform/api-pack": "^1.2",
+        "beberlei/doctrineextensions": "^1.2",
         "firebase/php-jwt": "^5.2",
         "gedmo/doctrine-extensions": "^2.4",
         "lexik/jwt-authentication-bundle": "^2.6",

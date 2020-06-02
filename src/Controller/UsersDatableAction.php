@@ -23,14 +23,26 @@ class UsersDatableAction
 
     public function __invoke()
     {
+        $arrayReturn = [];
         $userRepository = $this->entityManager->getRepository(User::class);
-
         $users = $userRepository->findAllDataTable();
-        if( $users ){
-            return new JsonResponse(['users' => $users]);
-        } else {
-            return new JsonResponse(['errors' => 'Something is wrong'], 400);
+
+        foreach( $users as $key => $user ){
+            $arrayReturn[$key]["idMember"] = $user["idMember"];
+            $arrayReturn[$key]["username"] = $user["username"];
+            $arrayReturn[$key]["email"] = $user["email"];
+            if( in_array("ROLE_DEV",$user["roles"]) ){
+                $arrayReturn[$key]["roles"] = "Développeur";
+            } else {
+                $arrayReturn[$key]["roles"] = "Membre";
+            }
+            $arrayReturn[$key]["userenabled"] = $user["userenabled"];
+            $arrayReturn[$key]["dateembauchement"] = $user["dateembauchement"];
+            $arrayReturn[$key]["idTeam"] = $user["idTeam"];
+            $arrayReturn[$key]["teamName"] = $user["teamName"];
+            $arrayReturn[$key]["teamenabled"] = $user["teamenabled"];
         }
-        
+
+        return $arrayReturn;
     }
 }
