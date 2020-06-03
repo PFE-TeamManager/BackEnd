@@ -11,6 +11,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 use App\Entity\Interfaces\CreatorEntityInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use App\Controller\TeamsDatableAction;
 
 // To find the correct operation name you may use bin/console debug:router
 // To get the users insted of their URI , we used the subresourceOperations & 
@@ -35,7 +36,13 @@ use Symfony\Component\Serializer\Annotation\Groups;
 *               "post"={
 *                   "access_control"="is_granted('ROLE_CHEF_PROJET')"
 *                },
-*               "get"
+*               "get"={
+*                   "access_control"="is_granted('ROLE_CHEF_PROJET')",
+*                   "method"="GET",
+*                   "path"="/teamsdatatable",
+*                   "controller"=TeamsDatableAction::class,
+*                   "normalization_context"={  "groups"={"get-Teams-With-Projects"}  }
+*                }
 *           }
 * )
 * @ORM\Entity(repositoryClass="App\Repository\TeamRepository")
@@ -47,13 +54,14 @@ class Team implements CreatorEntityInterface
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer").
+     * @ORM\Column(type="integer")
+     * @Groups({"get-Teams-With-Projects"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=200)
-     * @Groups({"get-User","get-Teams-Created-By-User","get-Users-Of-Team"})
+     * @Groups({"get-Teams-With-Projects","get-User","get-Teams-Created-By-User","get-Users-Of-Team"})
      */
     private $teamName;
 
@@ -66,18 +74,20 @@ class Team implements CreatorEntityInterface
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups({"get-Teams-With-Projects"})
      */
     private $enabled;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="createdTeams")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups("get-Users-Of-Team")
+     * @Groups({"get-Users-Of-Team"})
      */
     private $created_by;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Project", inversedBy="Teams")
+     * @Groups({"get-Teams-With-Projects"})
      */
     private $project;
 
@@ -145,7 +155,7 @@ class Team implements CreatorEntityInterface
 
     /**
      * @return User
-     * @Groups("get-Users-Of-Team")
+     * @Groups({"get-Users-Of-Team"})
      */
     public function getCreatedBy(): ?User
     {
@@ -162,6 +172,9 @@ class Team implements CreatorEntityInterface
         return $this;
     }
 
+    /**
+     * @Groups({"get-Teams-With-Projects"})
+     */
     public function getProject(): ?Project
     {
         return $this->project;
@@ -176,7 +189,7 @@ class Team implements CreatorEntityInterface
 
     /**
      * @return \DateTime
-     * @Groups({"get-Users-Of-Team"})
+     * @Groups({"get-Teams-With-Projects","get-Users-Of-Team"})
      */
     public function getCreatedAt()
     {
@@ -185,7 +198,7 @@ class Team implements CreatorEntityInterface
 
     /**
      * @return \DateTime
-     * @Groups({"get-Users-Of-Team"})
+     * @Groups({"get-Teams-With-Projects","get-Users-Of-Team"})
      */
     public function getUpdatedAt()
     {

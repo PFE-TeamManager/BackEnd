@@ -84,14 +84,14 @@ class Project implements CreatorEntityInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"get-Project"})
+     * @Groups({"get-Project","get-Teams-With-Projects"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
-     * @Groups({"create-Project","get-Project"})
+     * @Groups({"create-Project","get-Project","get-Teams-With-Projects"})
      */
     private $projectName;
 
@@ -103,6 +103,7 @@ class Project implements CreatorEntityInterface
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups({"get-Teams-With-Projects"})
      */
     private $enabled;
 
