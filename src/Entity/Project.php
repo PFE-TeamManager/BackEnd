@@ -96,7 +96,7 @@ class Project implements CreatorEntityInterface
     private $projectName;
 
     /**
-     * @Groups({"get-Project"})
+     * @Groups({"create-Project","get-Project"})
      * @ORM\OneToMany(targetEntity="App\Entity\Team", mappedBy="project")
      */
     private $Teams;
