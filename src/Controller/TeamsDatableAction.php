@@ -23,8 +23,23 @@ class TeamsDatableAction
 
     public function __invoke()
     {
+        $arrayReturn = [];
         $teamRepository = $this->entityManager->getRepository(Team::class);
         $teams = $teamRepository->findAllDataTable();
-        return $teams;
+
+        foreach( $teams as $key => $team ){
+            $arrayReturn[$key]["idTeam"] = $team["idTeam"];
+            $arrayReturn[$key]["teamName"] = $team["teamName"];
+            if( $team["teamenabled"] ){
+                $arrayReturn[$key]["teamenabled"] = "Active";
+            } else {
+                $arrayReturn[$key]["teamenabled"] = "Non Active";
+            }
+            $arrayReturn[$key]["idProject"] = $team["idProject"];
+            $arrayReturn[$key]["projectName"] = $team["projectName"];
+            $arrayReturn[$key]["projectenabled"] = $team["projectenabled"];
+        }
+
+        return $arrayReturn;
     }
 }

@@ -28,4 +28,14 @@ class TeamRepository extends ServiceEntityRepository
                     ->getQuery()
                     ->getResult();
     }
+
+    public function ActivateDeactivateTeam($idTeam,$enabled){
+        return $this->createQueryBuilder('t')
+                    ->update()
+                    ->set('t.enabled', $enabled)
+                    ->where('t.id = :id')
+                    ->setParameter('id', $idTeam)
+                    ->getQuery()
+                    ->execute();
+    }
 }

@@ -36,7 +36,7 @@ class UsersDatableAction
             } else {
                 $arrayReturn[$key]["roles"] = "Membre";
             }
-            $arrayReturn[$key]["userenabled"] = $user["userenabled"];
+            //$arrayReturn[$key]["userenabled"] = $user["userenabled"];
             $arrayReturn[$key]["dateembauchement"] = $user["dateembauchement"];
             $arrayReturn[$key]["idTeam"] = $user["idTeam"];
             $arrayReturn[$key]["teamName"] = $user["teamName"];
