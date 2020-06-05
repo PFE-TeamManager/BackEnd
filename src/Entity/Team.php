@@ -7,11 +7,13 @@ use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use App\Entity\Interfaces\CreatorEntityInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Controller\TeamsDatableAction;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 // To find the correct operation name you may use bin/console debug:router
 // To get the users insted of their URI , we used the subresourceOperations & 
@@ -34,7 +36,9 @@ use App\Controller\TeamsDatableAction;
 *           },
 *           collectionOperations={
 *               "post"={
-*                   "access_control"="is_granted('ROLE_CHEF_PROJET')"
+*                   "access_control"="is_granted('ROLE_CHEF_PROJET')",
+*                   "denormalization_context"={ "groups"={"create-Team"} },
+*                   "normalization_context"={  "groups"={"get-Teams-With-Projects"}  } 
 *                },
 *               "get"={
 *                   "access_control"="is_granted('ROLE_CHEF_PROJET')",
@@ -46,6 +50,7 @@ use App\Controller\TeamsDatableAction;
 *           }
 * )
 * @ORM\Entity(repositoryClass="App\Repository\TeamRepository")
+* @UniqueEntity("teamName", errorPath="teamName", groups={"create-Team"})
 */
 class Team implements CreatorEntityInterface
 {
@@ -60,14 +65,15 @@ class Team implements CreatorEntityInterface
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=200)
-     * @Groups({"get-Teams-With-Projects","get-User","get-Teams-Created-By-User","get-Users-Of-Team"})
+     * @ORM\Column(type="string", length=200, unique=true)
+     * @Assert\NotBlank()
+     * @Groups({"create-Team","get-Teams-With-Projects","get-User","get-Teams-Created-By-User","get-Users-Of-Team"})
      */
     private $teamName;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\User", mappedBy="teams")
-     * @Groups({"get-Teams-Created-By-User","get-Users-Of-Team"})
+     * @Groups({"get-Teams-Created-By-User","get-Users-Of-Team","create-Team"})
      * @ApiSubresource()
      */
     private $users;

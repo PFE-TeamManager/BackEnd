@@ -69,10 +69,20 @@ use App\Controller\UsersDatableAction;
  *          "put"={
  *             "access_control"="is_granted('ROLE_MEMBRE') and object == user",
  *             "denormalization_context"={
- *                 "groups"={"put"}
+ *                 "groups"={"put-user"}
  *             },
  *             "normalization_context"={
  *                 "groups"={"get-User"}
+ *             }
+ *          },
+ *          "patch"={
+ *             "access_control"="is_granted('ROLE_CHEF_PROJET')",
+ *             "input_formats"={"json"={"application/json"}},
+ *             "denormalization_context"={
+ *                 "groups"={"patch-user"}
+ *             },
+ *             "normalization_context"={
+ *                 "groups"={"put-user"}
  *             }
  *          }
  *      }
@@ -97,7 +107,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank(groups={"create-User"})
      * @Assert\Length(min=6, max=255, groups={"create-User"})
-     * @Groups({"get-Users-datatable","get-Owner","get-Comment","create-User","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task-with-comments"})
+     * @Groups({"put-user","get-Users-datatable","get-Owner","get-Comment","create-User","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task-with-comments"})
      */
     private $username;
 
@@ -107,7 +117,7 @@ class User implements UserInterface
      * @Assert\Email(
      *     message = "The email '{{ value }}' is not a valid email."
      * )
-     * @Groups({"get-Users-datatable","get-Owner","create-User","get-User","get-Team-With-Members"})
+     * @Groups({"put-user","get-Users-datatable","get-Owner","create-User","get-User","get-Team-With-Members"})
      */
     private $email;
 
@@ -128,7 +138,7 @@ class User implements UserInterface
      *     pattern="/^\(0\)[0-9]*$",
      *     message="Phone number should contain 9 digits"
      * )
-     * @Groups({"create-User","get-Team-With-Members"})
+     * @Groups({"put-user","create-User","get-Team-With-Members"})
      */
     private $phone;
 
@@ -179,7 +189,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="json")
-     * @Groups({"get-Users-datatable","get-Owner"})
+     * @Groups({"get-Users-datatable","get-Owner","patch-user"})
      */
     private $roles = [];
 

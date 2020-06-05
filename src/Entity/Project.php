@@ -89,7 +89,7 @@ class Project implements CreatorEntityInterface
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank()
      * @Groups({"create-Project","get-Project","get-Teams-With-Projects"})
      */
