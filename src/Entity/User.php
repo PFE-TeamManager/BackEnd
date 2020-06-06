@@ -50,6 +50,15 @@ use App\Controller\UsersDatableAction;
  *          }
  *      },
  *     itemOperations={
+ *          "patch"={
+ *             "access_control"="is_granted('ROLE_CHEF_PROJET')",
+ *             "input_formats"={"json"={"application/json"}},
+ *             "method"="PATCH",
+ *             "denormalization_context"={
+ *                 "groups"={"patch-user"}
+ *             },
+ *             "normalization_context"={   "groups"={"get-User"}  }
+ *          },
  *         "put-reset-password"={
  *             "access_control"="is_granted('ROLE_MEMBRE') and object == user",
  *             "method"="PUT",
@@ -70,26 +79,6 @@ use App\Controller\UsersDatableAction;
  *             "access_control"="is_granted('ROLE_MEMBRE') and object == user",
  *             "denormalization_context"={
  *                 "groups"={"put-user"}
- *             },
- *             "normalization_context"={
- *                 "groups"={"get-User"}
- *             }
- *          },
- *          "patch"={
- *             "access_control"="is_granted('ROLE_CHEF_PROJET')",
- *             "input_formats"={"json"={"application/json"}},
- *             "denormalization_context"={
- *                 "groups"={"patch-user"}
- *             },
- *             "normalization_context"={
- *                 "groups"={"put-user"}
- *             }
- *          },
- *          "patch"={
- *             "access_control"="is_granted('ROLE_CHEF_PROJET')",
- *             "input_formats"={"json"={"application/json"}},
- *             "denormalization_context"={
- *                 "groups"={"patch-user-team"}
  *             },
  *             "normalization_context"={
  *                 "groups"={"get-User"}
@@ -254,7 +243,7 @@ class User implements UserInterface
     private $comments;
 
     /**
-     * @Groups({"patch-user-team","get-User"})
+     * @Groups({"patch-user","get-User"})
      * @ORM\ManyToOne(targetEntity="App\Entity\Team", inversedBy="members")
      */
     private $teams;

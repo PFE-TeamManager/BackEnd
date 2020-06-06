@@ -13,8 +13,6 @@ use App\Entity\Interfaces\CreatorEntityInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Controller\TeamsDatableAction;
-use App\Controller\TeamsActivityAction;
-use App\Controller\TeamsAction;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 // To find the correct operation name you may use bin/console debug:router
