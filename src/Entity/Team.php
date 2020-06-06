@@ -84,13 +84,6 @@ class Team implements CreatorEntityInterface
     private $teamName;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\User", mappedBy="teams")
-     * @Groups({"get-Teams-Created-By-User","get-Users-Of-Team","create-Team"})
-     * @ApiSubresource()
-     */
-    private $users;
-
-    /**
      * @ORM\Column(type="boolean")
      * @Groups({"get-Teams-With-Projects"})
      */
@@ -109,9 +102,14 @@ class Team implements CreatorEntityInterface
      */
     private $project;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="teams")
+     */
+    private $members;
+
     public function __construct()
     {
-        $this->users = new ArrayCollection();
+        $this->members = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -127,34 +125,6 @@ class Team implements CreatorEntityInterface
     public function setTeamName(string $teamName): self
     {
         $this->teamName = $teamName;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|User[]
-     */
-    public function getUsers(): Collection
-    {
-        return $this->users;
-    }
-
-    public function addUser(User $user): self
-    {
-        if (!$this->users->contains($user)) {
-            $this->users[] = $user;
-            $user->addTeam($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUser(User $user): self
-    {
-        if ($this->users->contains($user)) {
-            $this->users->removeElement($user);
-            $user->removeTeam($this);
-        }
 
         return $this;
     }
@@ -221,6 +191,37 @@ class Team implements CreatorEntityInterface
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getMembers(): Collection
+    {
+        return $this->members;
+    }
+
+    public function addMember(User $member): self
+    {
+        if (!$this->members->contains($member)) {
+            $this->members[] = $member;
+            $member->setTeams($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMember(User $member): self
+    {
+        if ($this->members->contains($member)) {
+            $this->members->removeElement($member);
+            // set the owning side to null (unless already changed)
+            if ($member->getTeams() === $this) {
+                $member->setTeams(null);
+            }
+        }
+
+        return $this;
     }
 
 }

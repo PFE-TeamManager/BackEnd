@@ -26,7 +26,7 @@ class UserRepository extends ServiceEntityRepository
                     ->addSelect('t.id as idTeam,t.teamName,t.enabled as teamenabled')
                     ->where("u.roles NOT LIKE :role1")
                     ->andWhere("u.roles NOT LIKE :role2")
-                    ->andWhere("u.enabled = 1")
+                    ->andWhere("u.enabled = 1")//get only those who confirmed the email with confirmationToken
                     ->setParameters(array('role1'=> "%ROLE_CHEF_PROJET%", 'role2' => "%ROLE_ADMIN%"))
                     ->orderBy('u.createdAt', 'DESC')
                     ->getQuery()

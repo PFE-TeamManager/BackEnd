@@ -84,6 +84,16 @@ use App\Controller\UsersDatableAction;
  *             "normalization_context"={
  *                 "groups"={"put-user"}
  *             }
+ *          },
+ *          "patch"={
+ *             "access_control"="is_granted('ROLE_CHEF_PROJET')",
+ *             "input_formats"={"json"={"application/json"}},
+ *             "denormalization_context"={
+ *                 "groups"={"patch-user-team"}
+ *             },
+ *             "normalization_context"={
+ *                 "groups"={"get-User"}
+ *             }
  *          }
  *      }
  * )
@@ -189,7 +199,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="json")
-     * @Groups({"get-Users-datatable","get-Owner","patch-user"})
+     * @Groups({"get-Users-datatable","get-Owner","patch-user","get-User"})
      */
     private $roles = [];
 
@@ -199,12 +209,6 @@ class User implements UserInterface
      * @Groups({"get-Owner"})
      */
     private $date_resignation;
-
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Team", inversedBy="users")
-     * @Groups({"get-Users-datatable","get-Owner"})
-     */
-    private $teams;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Team", mappedBy="created_by", orphanRemoval=true)
@@ -249,9 +253,14 @@ class User implements UserInterface
      */
     private $comments;
 
+    /**
+     * @Groups({"patch-user-team","get-User"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Team", inversedBy="members")
+     */
+    private $teams;
+
     public function __construct()
     {
-        $this->teams = new ArrayCollection();
         $this->createdTeams = new ArrayCollection();
         $this->enabled = false;
         $this->confirmationToken = null;
@@ -379,32 +388,6 @@ class User implements UserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
-    }
-
-    /**
-     * @return Collection|Team[]
-     */
-    public function getTeams(): Collection
-    {
-        return $this->teams;
-    }
-
-    public function addTeam(Team $team): self
-    {
-        if (!$this->teams->contains($team)) {
-            $this->teams[] = $team;
-        }
-
-        return $this;
-    }
-
-    public function removeTeam(Team $team): self
-    {
-        if ($this->teams->contains($team)) {
-            $this->teams->removeElement($team);
-        }
-
-        return $this;
     }
 
     /**
@@ -609,6 +592,18 @@ class User implements UserInterface
                 $comment->setCreatedBy(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getTeams(): ?Team
+    {
+        return $this->teams;
+    }
+
+    public function setTeams(?Team $teams): self
+    {
+        $this->teams = $teams;
 
         return $this;
     }
