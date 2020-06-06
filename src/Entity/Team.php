@@ -14,6 +14,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Controller\TeamsDatableAction;
 use App\Controller\TeamsActivityAction;
+use App\Controller\TeamsAction;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 // To find the correct operation name you may use bin/console debug:router
@@ -55,10 +56,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 *                    "access_control"="is_granted('ROLE_CHEF_PROJET')",
 *                    "input_formats"={"json"={"application/json"}},
 *                    "method"="PATCH",
-*                    "path"="/teamsactivity/{id}",
-*                    "controller"=TeamsActivityAction::class,
 *                    "normalization_context"={   "groups"={"get-Teams-With-Projects"}  }
-*                 }
+*                }
 *            }
 * )
 * @ORM\Entity(repositoryClass="App\Repository\TeamRepository")
@@ -79,7 +78,7 @@ class Team implements CreatorEntityInterface
     /**
      * @ORM\Column(type="string", length=200, unique=true)
      * @Assert\NotBlank()
-     * @Groups({"create-Team","get-Teams-With-Projects","get-User","get-Teams-Created-By-User","get-Users-Of-Team"})
+     * @Groups({"create-Team","patch-Team","get-Teams-With-Projects","get-User","get-Teams-Created-By-User","get-Users-Of-Team"})
      */
     private $teamName;
 

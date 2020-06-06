@@ -38,4 +38,14 @@ class TeamRepository extends ServiceEntityRepository
                     ->getQuery()
                     ->execute();
     }
+
+    public function EditTeamName($idTeam,$teamName){
+        return $this->createQueryBuilder('t')
+                    ->update()
+                    ->set('t.team_name', $teamName)
+                    ->where('t.id = :id')
+                    ->setParameter('id', $idTeam)
+                    ->getQuery()
+                    ->execute();
+    }
 }
