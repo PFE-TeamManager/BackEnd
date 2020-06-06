@@ -3,10 +3,15 @@ security:
         App\Entity\User: bcrypt
         # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
-        database:
+        # users:
+        #     entity:
+        #         class: App\Entity\User
+        app_user_provider:
+        #database:
             entity:
                 class: App\Entity\User
                 property: username
+
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -19,7 +24,9 @@ security:
                 # Here authentication will happen (token generation)
                 # This path don't need to defined it , but must define it inside jwt.yaml
                 check_path: /api/login_check
-                # Handle successfull authentication
+                # Handle successfull authentication , http/Authentication/Authenticationsuccess handler
+                #To find the handler class,
+                #php bin/console debug:container lexik_jwt_authentication.handler.authentication_success
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 # Handle authentication failure (invalid credentials, no credentials etc).
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
@@ -28,6 +35,8 @@ security:
                     # jwt_token_authenticator is the Guard Authenticator
                     # - lexik_jwt_authentication.jwt_token_authenticator
                     # jwt_token_authenticator the Guard Authenticator is extended in the TokenAuthenticator
+                    #Authentication is handled in JWTTokenAuthenticator
+                    # AuthenticationSuccessListener is responsible on returning the user id
                     - App\Security\TokenAuthenticator
             user_checker: App\Security\UserEnabledChecker
 
@@ -41,10 +50,10 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/api/login,     roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        # - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
+        # - { path: ^/api,       roles: ROLE_MEMBRE }
     role_hierarchy:
         # in every registration, Role_Membre is given to the user
         # ROLE_DEV & ROLE_CHEF_PROJET is given to the user by the admin
+        ROLE_DEV: ROLE_MEMBRE
         ROLE_CHEF_PROJET: [ROLE_DEV, ROLE_MEMBRE]
         ROLE_ADMIN: ROLE_CHEF_PROJET
-        ROLE_SUPERADMIN: ROLE_ADMIN

@@ -19,32 +19,18 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-    // /**
-    //  * @return User[] Returns an array of User objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('m')
-            ->andWhere('m.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('m.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+    public function findAllDataTable(){
+        return $this->createQueryBuilder('u')
+                    ->select("u.id as idMember,u.username,u.email,u.roles,DATE_FORMAT(u.date_embauchement, '%Y-%m-%d') as dateembauchement")
+                    ->leftJoin('u.teams', 't')
+                    ->addSelect('t.id as idTeam,t.teamName,t.enabled as teamenabled')
+                    ->where("u.roles NOT LIKE :role1")
+                    ->andWhere("u.roles NOT LIKE :role2")
+                    ->andWhere("u.enabled = 1")
+                    ->setParameters(array('role1'=> "%ROLE_CHEF_PROJET%", 'role2' => "%ROLE_ADMIN%"))
+                    ->orderBy('u.createdAt', 'DESC')
+                    ->getQuery()
+                    ->getResult();
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?User
-    {
-        return $this->createQueryBuilder('m')
-            ->andWhere('m.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

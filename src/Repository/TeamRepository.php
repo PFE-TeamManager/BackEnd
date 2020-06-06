@@ -18,33 +18,24 @@ class TeamRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Team::class);
     }
-
-    // /**
-    //  * @return Team[] Returns an array of Team objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('e')
-            ->andWhere('e.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('e.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+    
+    public function findAllDataTable(){
+        return $this->createQueryBuilder('t')
+                    ->select("t.id as idTeam,t.teamName,t.enabled as teamenabled")
+                    ->leftJoin('t.project', 'p')
+                    ->addSelect('p.id as idProject,p.projectName,p.enabled as projectenabled')
+                    ->orderBy('t.createdAt', 'DESC')
+                    ->getQuery()
+                    ->getResult();
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Team
-    {
-        return $this->createQueryBuilder('e')
-            ->andWhere('e.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+    public function ActivateDeactivateTeam($idTeam,$enabled){
+        return $this->createQueryBuilder('t')
+                    ->update()
+                    ->set('t.enabled', $enabled)
+                    ->where('t.id = :id')
+                    ->setParameter('id', $idTeam)
+                    ->getQuery()
+                    ->execute();
     }
-    */
 }

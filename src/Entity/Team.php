@@ -7,10 +7,14 @@ use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use App\Entity\Interfaces\CreatorEntityInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use App\Controller\TeamsDatableAction;
+use App\Controller\TeamsActivityAction;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 // To find the correct operation name you may use bin/console debug:router
 // To get the users insted of their URI , we used the subresourceOperations & 
@@ -33,12 +37,32 @@ use Symfony\Component\Serializer\Annotation\Groups;
 *           },
 *           collectionOperations={
 *               "post"={
-*                   "access_control"="is_granted('ROLE_CHEF_PROJET')"
+*                   "access_control"="is_granted('ROLE_CHEF_PROJET')",
+*                   "denormalization_context"={ "groups"={"create-Team"} },
+*                   "normalization_context"={  "groups"={"get-Teams-With-Projects"}  } 
 *                },
-*               "get"
-*           }
+*               "get"={
+*                   "access_control"="is_granted('ROLE_CHEF_PROJET')",
+*                   "method"="GET",
+*                   "path"="/teamsdatatable",
+*                   "controller"=TeamsDatableAction::class,
+*                   "normalization_context"={  "groups"={"get-Teams-With-Projects"}  }
+*                }
+*           },
+*           itemOperations={
+*                "get",
+*                "patch"={
+*                    "access_control"="is_granted('ROLE_CHEF_PROJET')",
+*                    "input_formats"={"json"={"application/json"}},
+*                    "method"="PATCH",
+*                    "path"="/teamsactivity/{id}",
+*                    "controller"=TeamsActivityAction::class,
+*                    "normalization_context"={   "groups"={"get-Teams-With-Projects"}  }
+*                 }
+*            }
 * )
 * @ORM\Entity(repositoryClass="App\Repository\TeamRepository")
+* @UniqueEntity("teamName", errorPath="teamName", groups={"create-Team"})
 */
 class Team implements CreatorEntityInterface
 {
@@ -47,34 +71,43 @@ class Team implements CreatorEntityInterface
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer").
+     * @ORM\Column(type="integer")
+     * @Groups({"get-Teams-With-Projects"})
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=200)
-     * @Groups({"get-User","get-Teams-Created-By-User","get-Users-Of-Team"})
+     * @ORM\Column(type="string", length=200, unique=true)
+     * @Assert\NotBlank()
+     * @Groups({"create-Team","get-Teams-With-Projects","get-User","get-Teams-Created-By-User","get-Users-Of-Team"})
      */
     private $teamName;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\User", mappedBy="teams")
-     * @Groups({"get-Teams-Created-By-User","get-Users-Of-Team"})
+     * @Groups({"get-Teams-Created-By-User","get-Users-Of-Team","create-Team"})
      * @ApiSubresource()
      */
     private $users;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups({"get-Teams-With-Projects"})
      */
     private $enabled;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="createdTeams")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups("get-Users-Of-Team")
+     * @Groups({"get-Users-Of-Team"})
      */
     private $created_by;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Project", inversedBy="Teams")
+     * @Groups({"get-Teams-With-Projects"})
+     */
+    private $project;
 
     public function __construct()
     {
@@ -140,6 +173,7 @@ class Team implements CreatorEntityInterface
 
     /**
      * @return User
+     * @Groups({"get-Users-Of-Team"})
      */
     public function getCreatedBy(): ?User
     {
@@ -154,6 +188,39 @@ class Team implements CreatorEntityInterface
         $this->created_by = $created_by;
 
         return $this;
+    }
+
+    /**
+     * @Groups({"get-Teams-With-Projects"})
+     */
+    public function getProject(): ?Project
+    {
+        return $this->project;
+    }
+
+    public function setProject(?Project $project): self
+    {
+        $this->project = $project;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     * @Groups({"get-Teams-With-Projects","get-Users-Of-Team"})
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @return \DateTime
+     * @Groups({"get-Teams-With-Projects","get-Users-Of-Team"})
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
     }
 
 }
