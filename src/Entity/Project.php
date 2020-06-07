@@ -70,6 +70,12 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
  *        "get"={
  *           "security"="is_granted('ROLE_DEV')", "security_message"="Sorry, but you should be a developper.",
  *           "normalization_context"={  "groups"={"get-Project"}  }
+ *        },
+ *        "patch"={
+ *            "access_control"="is_granted('ROLE_CHEF_PROJET')",
+ *            "input_formats"={"json"={"application/json"}},
+ *            "method"="PATCH",
+ *            "normalization_context"={   "groups"={"get-Project"}  }
  *        }
  *    }
  * )
@@ -103,7 +109,7 @@ class Project implements CreatorEntityInterface
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"get-Teams-With-Projects"})
+     * @Groups({"get-Teams-With-Projects","get-Project"})
      */
     private $enabled;
 
