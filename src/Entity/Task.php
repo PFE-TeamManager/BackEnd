@@ -34,6 +34,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *              "get"={
  *                  "security"="is_granted('ROLE_DEV')", "security_message"="Sorry, but you should be a developper.",
  *                  "normalization_context"={  "groups"={"get-Task-with-comments"}  }
+ *              },
+ *             "patch"={
+ *                 "access_control"="is_granted('ROLE_CHEF_PROJET')",
+ *                 "input_formats"={"json"={"application/json"}},
+ *                 "method"="PATCH",
+ *                 "normalization_context"={   "groups"={"get-Task-with-comments"}  }
  *              }
  *           }
  * )
@@ -79,6 +85,7 @@ class Task implements CreatorEntityInterface
     private $created_by;
 
     /**
+     * @Groups({"get-Task-with-comments"})
      * @ORM\Column(type="boolean")
      */
     private $enabled;
