@@ -97,9 +97,16 @@ class Task implements CreatorEntityInterface
      */
     private $comments;
 
+    /**
+     * @Groups({"create-Task","get-Task-with-comments"})
+     * @ORM\ManyToMany(targetEntity="App\Entity\Labels", inversedBy="tasks")
+     */
+    private $labels;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->labels = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -218,6 +225,32 @@ class Task implements CreatorEntityInterface
             if ($comment->getTask() === $this) {
                 $comment->setTask(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Labels[]
+     */
+    public function getLabels(): Collection
+    {
+        return $this->labels;
+    }
+
+    public function addLabel(Labels $label): self
+    {
+        if (!$this->labels->contains($label)) {
+            $this->labels[] = $label;
+        }
+
+        return $this;
+    }
+
+    public function removeLabel(Labels $label): self
+    {
+        if ($this->labels->contains($label)) {
+            $this->labels->removeElement($label);
         }
 
         return $this;
