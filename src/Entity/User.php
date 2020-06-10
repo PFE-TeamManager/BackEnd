@@ -98,7 +98,7 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"get-Users-datatable","get-Owner","get-Comment","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task-with-comments"})
+     * @Groups({"get-Users-datatable","get-Task-with-comments","get-Owner","get-Comment","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task-with-comments"})
      */
     private $id;
 
@@ -243,7 +243,7 @@ class User implements UserInterface
     private $comments;
 
     /**
-     * @Groups({"patch-user","get-User"})
+     * @Groups({"patch-user","get-User","get-Owner"})
      * @ORM\ManyToOne(targetEntity="App\Entity\Team", inversedBy="members")
      */
     private $teams;
@@ -585,6 +585,9 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @Groups({"get-User"})
+     */
     public function getTeams(): ?Team
     {
         return $this->teams;

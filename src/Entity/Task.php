@@ -13,6 +13,7 @@ use App\Entity\Interfaces\CreatorEntityInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
+use App\Controller\TasksUserAction;
 
 /**
  * @ApiResource(
@@ -71,7 +72,7 @@ class Task implements CreatorEntityInterface
     private $TaskDescription;
 
     /**
-     * @Groups({"create-Task"})
+     * @Groups({"get-Task-with-comments","create-Task"})
      * @ORM\ManyToOne(targetEntity="App\Entity\Project", inversedBy="tasks")
      * @ORM\JoinColumn(nullable=false)
      */

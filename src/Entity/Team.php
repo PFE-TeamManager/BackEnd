@@ -69,7 +69,7 @@ class Team implements CreatorEntityInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"get-Teams-With-Projects"})
+     * @Groups({"get-Teams-With-Projects","get-User","get-Owner","get-Task-with-comments"})
      */
     private $id;
 
@@ -100,6 +100,7 @@ class Team implements CreatorEntityInterface
     private $project;
 
     /**
+     * @Groups({"get-Task-with-comments"}),
      * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="teams")
      */
     private $members;
