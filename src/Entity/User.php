@@ -248,6 +248,11 @@ class User implements UserInterface
      */
     private $teams;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Task", mappedBy="user")
+     */
+    private $affectedTasks;
+
     public function __construct()
     {
         $this->createdTeams = new ArrayCollection();
@@ -257,6 +262,7 @@ class User implements UserInterface
         $this->projects = new ArrayCollection();
         $this->tasks = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->affectedTasks = new ArrayCollection();
     }
     
 
@@ -596,6 +602,37 @@ class User implements UserInterface
     public function setTeams(?Team $teams): self
     {
         $this->teams = $teams;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Task[]
+     */
+    public function getAffectedTasks(): Collection
+    {
+        return $this->affectedTasks;
+    }
+
+    public function addAffectedTask(Task $affectedTask): self
+    {
+        if (!$this->affectedTasks->contains($affectedTask)) {
+            $this->affectedTasks[] = $affectedTask;
+            $affectedTask->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAffectedTask(Task $affectedTask): self
+    {
+        if ($this->affectedTasks->contains($affectedTask)) {
+            $this->affectedTasks->removeElement($affectedTask);
+            // set the owning side to null (unless already changed)
+            if ($affectedTask->getUser() === $this) {
+                $affectedTask->setUser(null);
+            }
+        }
 
         return $this;
     }

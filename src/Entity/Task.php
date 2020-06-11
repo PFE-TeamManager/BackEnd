@@ -37,7 +37,7 @@ use App\Controller\TasksUserAction;
  *                  "normalization_context"={  "groups"={"get-Task-with-comments"}  }
  *              },
  *             "patch"={
- *                 "access_control"="is_granted('ROLE_CHEF_PROJET')",
+ *                 "access_control"="is_granted('ROLE_DEV')",
  *                 "input_formats"={"json"={"application/json"}},
  *                 "method"="PATCH",
  *                 "normalization_context"={   "groups"={"get-Task-with-comments"}  }
@@ -103,6 +103,12 @@ class Task implements CreatorEntityInterface
      * @ORM\ManyToMany(targetEntity="App\Entity\Labels", inversedBy="tasks")
      */
     private $labels;
+
+    /**
+     * @Groups({"get-Task-with-comments"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="affectedTasks")
+     */
+    private $user;
 
     public function __construct()
     {
@@ -253,6 +259,18 @@ class Task implements CreatorEntityInterface
         if ($this->labels->contains($label)) {
             $this->labels->removeElement($label);
         }
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }
