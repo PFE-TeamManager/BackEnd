@@ -95,7 +95,7 @@ class Team implements CreatorEntityInterface
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Project", inversedBy="Teams")
-     * @Groups({"get-Teams-With-Projects"})
+     * @Groups({"get-Teams-With-Projects","get-Owner"})
      */
     private $project;
 

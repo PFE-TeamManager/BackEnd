@@ -38,6 +38,7 @@ class Labels implements CreatorEntityInterface
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
+     * @Groups({"get-Task-with-comments"})
      * @ORM\Column(type="integer")
      */
     private $id;

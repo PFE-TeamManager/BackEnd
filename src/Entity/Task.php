@@ -18,6 +18,7 @@ use App\Controller\TasksUserAction;
 /**
  * @ApiResource(
  *           attributes={
+ *              "normalization_context"={"groups"={"get-Task-with-comments"}},
  *              "order"={"createdAt": "DESC"}, "maximum_items_per_page"=6
  *           },
  *           collectionOperations={
@@ -101,6 +102,7 @@ class Task implements CreatorEntityInterface
     /**
      * @Groups({"create-Task","get-Task-with-comments"})
      * @ORM\ManyToMany(targetEntity="App\Entity\Labels", inversedBy="tasks")
+     * @ApiSubresource()
      */
     private $labels;
 
@@ -262,7 +264,7 @@ class Task implements CreatorEntityInterface
 
         return $this;
     }
-
+ 
     public function getUser(): ?User
     {
         return $this->user;

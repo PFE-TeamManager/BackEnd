@@ -53,14 +53,14 @@ class Comment implements CreatorEntityInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"get-comment"})
+     * @Groups({"get-comment","get-Task-with-comments"})
      */
     private $id;
 
     /**
      * @Groups({"get-Comment","create-Comment"})
      * @ORM\Column(type="text")
-     * @Assert\NotBlank(groups={"create-Comment"})
+     * @Assert\NotBlank(groups={"create-Comment","get-Task-with-comments"})
      */
     private $content;
 

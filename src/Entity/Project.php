@@ -90,7 +90,7 @@ class Project implements CreatorEntityInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"get-Project","get-Teams-With-Projects"})
+     * @Groups({"get-Project","get-Teams-With-Projects","get-Owner"})
      */
     private $id;
 

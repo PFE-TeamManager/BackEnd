@@ -40,7 +40,7 @@ use App\Controller\UsersDatableAction;
  *              "validation_groups"={"create-User"}
  *           },
  *          "get"={
- *             "access_control"="is_granted('ROLE_CHEF_PROJET')",
+ *             "access_control"="is_granted('ROLE_DEV')",
  *             "method"="GET",
  *             "path"="/usersdatatable",
  *             "controller"=UsersDatableAction::class,
@@ -98,7 +98,7 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"get-Users-datatable","get-Task-with-comments","get-Owner","get-Comment","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task-with-comments"})
+     * @Groups({"get-Users-datatable","get-Owner","get-Comment","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task-with-comments"})
      */
     private $id;
 
