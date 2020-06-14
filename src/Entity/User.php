@@ -220,14 +220,6 @@ class User implements UserInterface
 
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Image")
-     * @ORM\JoinTable()
-     * @ApiSubresource()
-     * @Groups({"create-User", "get-User"})
-     */
-    private $images;
-
-    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Project", mappedBy="created_by", orphanRemoval=true)
      */
     private $projects;
@@ -259,7 +251,6 @@ class User implements UserInterface
         $this->createdTeams = new ArrayCollection();
         $this->enabled = false;
         $this->confirmationToken = null;
-        $this->images = new ArrayCollection();
         $this->projects = new ArrayCollection();
         $this->tasks = new ArrayCollection();
         $this->comments = new ArrayCollection();
@@ -482,22 +473,6 @@ class User implements UserInterface
         $this->confirmationToken = $confirmationToken;
     }
 
-
-
-    public function getImages(): Collection
-    {
-        return $this->images;
-    }
-
-    public function addImage(Image $image)
-    {
-        $this->images->add($image);
-    }
-
-    public function removeImage(Image $image)
-    {
-        $this->images->removeElement($image);
-    }
 
     /**
      * @return Collection|Project[]
