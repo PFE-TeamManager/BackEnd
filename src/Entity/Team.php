@@ -69,14 +69,14 @@ class Team implements CreatorEntityInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"get-Teams-With-Projects","get-User","get-Owner","get-Task-with-comments"})
+     * @Groups({"get-Project","get-Teams-With-Projects","get-User","get-Owner","get-Task-with-comments"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=200, unique=true)
      * @Assert\NotBlank()
-     * @Groups({"create-Team","patch-Team","get-Teams-With-Projects","get-User","get-Teams-Created-By-User","get-Users-Of-Team"})
+     * @Groups({"get-Project","create-Team","patch-Team","get-Teams-With-Projects","get-User","get-Teams-Created-By-User","get-Users-Of-Team"})
      */
     private $teamName;
 

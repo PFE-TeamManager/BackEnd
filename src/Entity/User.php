@@ -98,7 +98,7 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"get-Users-datatable","get-Owner","get-Comment","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task-with-comments"})
+     * @Groups({"get-Users-datatable","get-Owner","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task-with-comments"})
      */
     private $id;
 
@@ -106,7 +106,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank(groups={"create-User"})
      * @Assert\Length(min=6, max=255, groups={"create-User"})
-     * @Groups({"put-user","get-Users-datatable","get-Owner","get-Comment","create-User","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task-with-comments"})
+     * @Groups({"put-user","create-User","get-Users-datatable","get-Owner","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task-with-comments"})
      */
     private $username;
 
