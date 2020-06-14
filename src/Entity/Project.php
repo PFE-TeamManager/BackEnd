@@ -53,7 +53,7 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
  * })
  * @ApiResource(
  *     attributes={
- *         "order"={"createdAt": "DESC"}, "maximum_items_per_page"=3
+ *         "order"={"createdAt": "DESC"}, "maximum_items_per_page"=4
  *     },
  *     collectionOperations={
  *       "post"={
@@ -70,6 +70,12 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
  *        "get"={
  *           "security"="is_granted('ROLE_DEV')", "security_message"="Sorry, but you should be a developper.",
  *           "normalization_context"={  "groups"={"get-Project"}  }
+ *        },
+ *        "patch"={
+ *            "access_control"="is_granted('ROLE_CHEF_PROJET')",
+ *            "input_formats"={"json"={"application/json"}},
+ *            "method"="PATCH",
+ *            "normalization_context"={   "groups"={"get-Project"}  }
  *        }
  *    }
  * )
@@ -84,26 +90,26 @@ class Project implements CreatorEntityInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"get-Project","get-Teams-With-Projects"})
+     * @Groups({"get-Project","get-Teams-With-Projects","get-Owner","get-Task-with-comments"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank()
-     * @Groups({"create-Project","get-Project","get-Teams-With-Projects"})
+     * @Groups({"create-Project","get-Project","get-Teams-With-Projects","get-Task-with-comments"})
      */
     private $projectName;
 
     /**
-     * @Groups({"create-Project","get-Project"})
+     * @Groups({"create-Project","get-Project","get-Task-with-comments"})
      * @ORM\OneToMany(targetEntity="App\Entity\Team", mappedBy="project")
      */
     private $Teams;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"get-Teams-With-Projects"})
+     * @Groups({"get-Teams-With-Projects","get-Project"})
      */
     private $enabled;
 

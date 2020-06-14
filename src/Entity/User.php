@@ -40,7 +40,7 @@ use App\Controller\UsersDatableAction;
  *              "validation_groups"={"create-User"}
  *           },
  *          "get"={
- *             "access_control"="is_granted('ROLE_CHEF_PROJET')",
+ *             "access_control"="is_granted('ROLE_DEV')",
  *             "method"="GET",
  *             "path"="/usersdatatable",
  *             "controller"=UsersDatableAction::class,
@@ -50,6 +50,15 @@ use App\Controller\UsersDatableAction;
  *          }
  *      },
  *     itemOperations={
+ *          "patch"={
+ *             "access_control"="is_granted('ROLE_CHEF_PROJET')",
+ *             "input_formats"={"json"={"application/json"}},
+ *             "method"="PATCH",
+ *             "denormalization_context"={
+ *                 "groups"={"patch-user"}
+ *             },
+ *             "normalization_context"={   "groups"={"get-User"}  }
+ *          },
  *         "put-reset-password"={
  *             "access_control"="is_granted('ROLE_MEMBRE') and object == user",
  *             "method"="PUT",
@@ -74,16 +83,6 @@ use App\Controller\UsersDatableAction;
  *             "normalization_context"={
  *                 "groups"={"get-User"}
  *             }
- *          },
- *          "patch"={
- *             "access_control"="is_granted('ROLE_CHEF_PROJET')",
- *             "input_formats"={"json"={"application/json"}},
- *             "denormalization_context"={
- *                 "groups"={"patch-user"}
- *             },
- *             "normalization_context"={
- *                 "groups"={"put-user"}
- *             }
  *          }
  *      }
  * )
@@ -99,7 +98,7 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"get-Users-datatable","get-Owner","get-Comment","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task-with-comments"})
+     * @Groups({"get-Users-datatable","get-Owner","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task-with-comments"})
      */
     private $id;
 
@@ -107,7 +106,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank(groups={"create-User"})
      * @Assert\Length(min=6, max=255, groups={"create-User"})
-     * @Groups({"put-user","get-Users-datatable","get-Owner","get-Comment","create-User","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task-with-comments"})
+     * @Groups({"put-user","create-User","get-Users-datatable","get-Owner","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task-with-comments"})
      */
     private $username;
 
@@ -189,7 +188,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="json")
-     * @Groups({"get-Users-datatable","get-Owner","patch-user"})
+     * @Groups({"get-Users-datatable","get-Owner","patch-user","get-User"})
      */
     private $roles = [];
 
@@ -199,12 +198,6 @@ class User implements UserInterface
      * @Groups({"get-Owner"})
      */
     private $date_resignation;
-
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Team", inversedBy="users")
-     * @Groups({"get-Users-datatable","get-Owner"})
-     */
-    private $teams;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Team", mappedBy="created_by", orphanRemoval=true)
@@ -227,14 +220,6 @@ class User implements UserInterface
 
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Image")
-     * @ORM\JoinTable()
-     * @ApiSubresource()
-     * @Groups({"create-User", "get-User"})
-     */
-    private $images;
-
-    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Project", mappedBy="created_by", orphanRemoval=true)
      */
     private $projects;
@@ -249,16 +234,27 @@ class User implements UserInterface
      */
     private $comments;
 
+    /**
+     * @Groups({"patch-user","get-User","get-Owner"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Team", inversedBy="members")
+     */
+    private $teams;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Task", mappedBy="user")
+     * @ApiSubresource()
+     */
+    private $affectedTasks;
+
     public function __construct()
     {
-        $this->teams = new ArrayCollection();
         $this->createdTeams = new ArrayCollection();
         $this->enabled = false;
         $this->confirmationToken = null;
-        $this->images = new ArrayCollection();
         $this->projects = new ArrayCollection();
         $this->tasks = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->affectedTasks = new ArrayCollection();
     }
     
 
@@ -384,32 +380,6 @@ class User implements UserInterface
     /**
      * @return Collection|Team[]
      */
-    public function getTeams(): Collection
-    {
-        return $this->teams;
-    }
-
-    public function addTeam(Team $team): self
-    {
-        if (!$this->teams->contains($team)) {
-            $this->teams[] = $team;
-        }
-
-        return $this;
-    }
-
-    public function removeTeam(Team $team): self
-    {
-        if ($this->teams->contains($team)) {
-            $this->teams->removeElement($team);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Team[]
-     */
     public function getCreatedTeams(): Collection
     {
         return $this->createdTeams;
@@ -504,22 +474,6 @@ class User implements UserInterface
     }
 
 
-
-    public function getImages(): Collection
-    {
-        return $this->images;
-    }
-
-    public function addImage(Image $image)
-    {
-        $this->images->add($image);
-    }
-
-    public function removeImage(Image $image)
-    {
-        $this->images->removeElement($image);
-    }
-
     /**
      * @return Collection|Project[]
      */
@@ -607,6 +561,52 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($comment->getCreatedBy() === $this) {
                 $comment->setCreatedBy(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @Groups({"get-User"})
+     */
+    public function getTeams(): ?Team
+    {
+        return $this->teams;
+    }
+
+    public function setTeams(?Team $teams): self
+    {
+        $this->teams = $teams;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Task[]
+     */
+    public function getAffectedTasks(): Collection
+    {
+        return $this->affectedTasks;
+    }
+
+    public function addAffectedTask(Task $affectedTask): self
+    {
+        if (!$this->affectedTasks->contains($affectedTask)) {
+            $this->affectedTasks[] = $affectedTask;
+            $affectedTask->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAffectedTask(Task $affectedTask): self
+    {
+        if ($this->affectedTasks->contains($affectedTask)) {
+            $this->affectedTasks->removeElement($affectedTask);
+            // set the owning side to null (unless already changed)
+            if ($affectedTask->getUser() === $this) {
+                $affectedTask->setUser(null);
             }
         }
 

@@ -13,11 +13,13 @@ use App\Entity\Interfaces\CreatorEntityInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
+use App\Controller\TasksUserAction;
 
 /**
  * @ApiResource(
  *           attributes={
- *              "order"={"createdAt": "DESC"}, "maximum_items_per_page"=3
+ *              "normalization_context"={"groups"={"get-Task-with-comments"}},
+ *              "order"={"createdAt": "DESC"}, "maximum_items_per_page"=6
  *           },
  *           collectionOperations={
  *               "post"={
@@ -34,6 +36,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *              "get"={
  *                  "security"="is_granted('ROLE_DEV')", "security_message"="Sorry, but you should be a developper.",
  *                  "normalization_context"={  "groups"={"get-Task-with-comments"}  }
+ *              },
+ *             "patch"={
+ *                 "access_control"="is_granted('ROLE_DEV')",
+ *                 "input_formats"={"json"={"application/json"}},
+ *                 "method"="PATCH",
+ *                 "normalization_context"={   "groups"={"get-Task-with-comments"}  }
  *              }
  *           }
  * )
@@ -65,7 +73,7 @@ class Task implements CreatorEntityInterface
     private $TaskDescription;
 
     /**
-     * @Groups({"create-Task"})
+     * @Groups({"get-Task-with-comments","create-Task"})
      * @ORM\ManyToOne(targetEntity="App\Entity\Project", inversedBy="tasks")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -79,6 +87,7 @@ class Task implements CreatorEntityInterface
     private $created_by;
 
     /**
+     * @Groups({"get-Task-with-comments"})
      * @ORM\Column(type="boolean")
      */
     private $enabled;
@@ -90,9 +99,59 @@ class Task implements CreatorEntityInterface
      */
     private $comments;
 
+    /**
+     * @Groups({"create-Task","get-Task-with-comments"})
+     * @ORM\ManyToMany(targetEntity="App\Entity\Labels", inversedBy="tasks")
+     * @ApiSubresource()
+     */
+    private $labels;
+
+    /**
+     * @Groups({"get-Task-with-comments"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="affectedTasks")
+     */
+    private $user;
+
+    /**
+     * @Groups({"get-Task-with-comments"})
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $ToDo;
+
+    /**
+     * @Groups({"get-Task-with-comments"})
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $ToDoDate;
+
+    /**
+     * @Groups({"get-Task-with-comments"})
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $doing;
+
+    /**
+     * @Groups({"get-Task-with-comments"})
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $datedoing;
+
+    /**
+     * @Groups({"get-Task-with-comments"})
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $done;
+
+    /**
+     * @Groups({"get-Task-with-comments"})
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $datedone;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->labels = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -212,6 +271,116 @@ class Task implements CreatorEntityInterface
                 $comment->setTask(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Labels[]
+     */
+    public function getLabels(): Collection
+    {
+        return $this->labels;
+    }
+
+    public function addLabel(Labels $label): self
+    {
+        if (!$this->labels->contains($label)) {
+            $this->labels[] = $label;
+        }
+
+        return $this;
+    }
+
+    public function removeLabel(Labels $label): self
+    {
+        if ($this->labels->contains($label)) {
+            $this->labels->removeElement($label);
+        }
+
+        return $this;
+    }
+ 
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getToDo(): ?bool
+    {
+        return $this->ToDo;
+    }
+
+    public function setToDo(bool $ToDo): self
+    {
+        $this->ToDo = $ToDo;
+
+        return $this;
+    }
+
+    public function getToDoDate(): ?\DateTimeInterface
+    {
+        return $this->ToDoDate;
+    }
+
+    public function setToDoDate(?\DateTimeInterface $ToDoDate): self
+    {
+        $this->ToDoDate = $ToDoDate;
+
+        return $this;
+    }
+
+    public function getDoing(): ?bool
+    {
+        return $this->doing;
+    }
+
+    public function setDoing(bool $doing): self
+    {
+        $this->doing = $doing;
+
+        return $this;
+    }
+
+    public function getDatedoing(): ?\DateTimeInterface
+    {
+        return $this->datedoing;
+    }
+
+    public function setDatedoing(?\DateTimeInterface $datedoing): self
+    {
+        $this->datedoing = $datedoing;
+
+        return $this;
+    }
+
+    public function getDone(): ?bool
+    {
+        return $this->done;
+    }
+
+    public function setDone(?bool $done): self
+    {
+        $this->done = $done;
+
+        return $this;
+    }
+
+    public function getDatedone(): ?\DateTimeInterface
+    {
+        return $this->datedone;
+    }
+
+    public function setDatedone(?\DateTimeInterface $datedone): self
+    {
+        $this->datedone = $datedone;
 
         return $this;
     }

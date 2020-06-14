@@ -13,7 +13,6 @@ use App\Entity\Interfaces\CreatorEntityInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Controller\TeamsDatableAction;
-use App\Controller\TeamsActivityAction;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 // To find the correct operation name you may use bin/console debug:router
@@ -55,10 +54,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 *                    "access_control"="is_granted('ROLE_CHEF_PROJET')",
 *                    "input_formats"={"json"={"application/json"}},
 *                    "method"="PATCH",
-*                    "path"="/teamsactivity/{id}",
-*                    "controller"=TeamsActivityAction::class,
 *                    "normalization_context"={   "groups"={"get-Teams-With-Projects"}  }
-*                 }
+*                }
 *            }
 * )
 * @ORM\Entity(repositoryClass="App\Repository\TeamRepository")
@@ -72,23 +69,16 @@ class Team implements CreatorEntityInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"get-Teams-With-Projects"})
+     * @Groups({"get-Project","get-Teams-With-Projects","get-User","get-Owner","get-Task-with-comments"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=200, unique=true)
      * @Assert\NotBlank()
-     * @Groups({"create-Team","get-Teams-With-Projects","get-User","get-Teams-Created-By-User","get-Users-Of-Team"})
+     * @Groups({"get-Project","create-Team","patch-Team","get-Teams-With-Projects","get-User","get-Teams-Created-By-User","get-Users-Of-Team"})
      */
     private $teamName;
-
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\User", mappedBy="teams")
-     * @Groups({"get-Teams-Created-By-User","get-Users-Of-Team","create-Team"})
-     * @ApiSubresource()
-     */
-    private $users;
 
     /**
      * @ORM\Column(type="boolean")
@@ -105,13 +95,19 @@ class Team implements CreatorEntityInterface
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Project", inversedBy="Teams")
-     * @Groups({"get-Teams-With-Projects"})
+     * @Groups({"get-Teams-With-Projects","get-Owner"})
      */
     private $project;
 
+    /**
+     * @Groups({"get-Task-with-comments"}),
+     * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="teams")
+     */
+    private $members;
+
     public function __construct()
     {
-        $this->users = new ArrayCollection();
+        $this->members = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -127,34 +123,6 @@ class Team implements CreatorEntityInterface
     public function setTeamName(string $teamName): self
     {
         $this->teamName = $teamName;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|User[]
-     */
-    public function getUsers(): Collection
-    {
-        return $this->users;
-    }
-
-    public function addUser(User $user): self
-    {
-        if (!$this->users->contains($user)) {
-            $this->users[] = $user;
-            $user->addTeam($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUser(User $user): self
-    {
-        if ($this->users->contains($user)) {
-            $this->users->removeElement($user);
-            $user->removeTeam($this);
-        }
 
         return $this;
     }
@@ -221,6 +189,37 @@ class Team implements CreatorEntityInterface
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getMembers(): Collection
+    {
+        return $this->members;
+    }
+
+    public function addMember(User $member): self
+    {
+        if (!$this->members->contains($member)) {
+            $this->members[] = $member;
+            $member->setTeams($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMember(User $member): self
+    {
+        if ($this->members->contains($member)) {
+            $this->members->removeElement($member);
+            // set the owning side to null (unless already changed)
+            if ($member->getTeams() === $this) {
+                $member->setTeams(null);
+            }
+        }
+
+        return $this;
     }
 
 }

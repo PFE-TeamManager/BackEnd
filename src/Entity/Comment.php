@@ -13,6 +13,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * @ApiResource(
  *     attributes={
+ *         "normalization_context"={"groups"={"get-Task-with-comments"}},
  *         "order"={"createdAt": "DESC"}, "maximum_items_per_page"=3,
  *         "pagination_client_enabled"=true,
  *         "pagination_client_items_per_page"=true
@@ -30,7 +31,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *             "security"="is_granted('ROLE_DEV')", 
  *             "security_message"="Sorry, but you should be a developper.",
  *             "normalization_context"={
- *                 "groups"={"get-Comment"}
+ *                 "groups"={"get-Task-with-comments"}
  *             }
  *         },
  *         "api_tasks_comments_get_subresource"={
@@ -53,19 +54,19 @@ class Comment implements CreatorEntityInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"get-comment"})
+     * @Groups({"get-Task-with-comments","get-Comment"})
      */
     private $id;
 
     /**
-     * @Groups({"get-Comment","create-Comment"})
+     * @Groups({"get-Task-with-comments","create-Comment","get-Comment"})
      * @ORM\Column(type="text")
      * @Assert\NotBlank(groups={"create-Comment"})
      */
     private $content;
 
     /**
-     * @Groups({"get-Comment"})
+     * @Groups({"get-Task-with-comments"})
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="comments")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -79,6 +80,7 @@ class Comment implements CreatorEntityInterface
     private $Task;
 
     /**
+     * @Groups({"get-Task-with-comments"})
      * @ORM\Column(type="boolean")
      */
     private $enabled;
@@ -102,7 +104,7 @@ class Comment implements CreatorEntityInterface
 
     /**
      * @return User
-     * @Groups({"get-Comment"})
+     * @Groups({"get-Task-with-comments"})
      */
     public function getCreatedBy(): ?User
     {
@@ -117,6 +119,24 @@ class Comment implements CreatorEntityInterface
         $this->created_by = $created_by;
 
         return $this;
+    }
+
+    /**
+     * @return \DateTime
+     * @Groups({"get-Task-with-comments"})
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @return \DateTime
+     * @Groups({"get-Task-with-comments"})
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
     }
 
     public function getTask(): ?Task
