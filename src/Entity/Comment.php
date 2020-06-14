@@ -31,7 +31,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *             "security"="is_granted('ROLE_DEV')", 
  *             "security_message"="Sorry, but you should be a developper.",
  *             "normalization_context"={
- *                 "groups"={"get-Comment"}
+ *                 "groups"={"get-Task-with-comments"}
  *             }
  *         },
  *         "api_tasks_comments_get_subresource"={
