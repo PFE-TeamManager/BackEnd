@@ -112,6 +112,42 @@ class Task implements CreatorEntityInterface
      */
     private $user;
 
+    /**
+     * @Groups({"get-Task-with-comments"})
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $ToDo;
+
+    /**
+     * @Groups({"get-Task-with-comments"})
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $ToDoDate;
+
+    /**
+     * @Groups({"get-Task-with-comments"})
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $doing;
+
+    /**
+     * @Groups({"get-Task-with-comments"})
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $datedoing;
+
+    /**
+     * @Groups({"get-Task-with-comments"})
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $done;
+
+    /**
+     * @Groups({"get-Task-with-comments"})
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $datedone;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
@@ -273,6 +309,78 @@ class Task implements CreatorEntityInterface
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getToDo(): ?bool
+    {
+        return $this->ToDo;
+    }
+
+    public function setToDo(bool $ToDo): self
+    {
+        $this->ToDo = $ToDo;
+
+        return $this;
+    }
+
+    public function getToDoDate(): ?\DateTimeInterface
+    {
+        return $this->ToDoDate;
+    }
+
+    public function setToDoDate(?\DateTimeInterface $ToDoDate): self
+    {
+        $this->ToDoDate = $ToDoDate;
+
+        return $this;
+    }
+
+    public function getDoing(): ?bool
+    {
+        return $this->doing;
+    }
+
+    public function setDoing(bool $doing): self
+    {
+        $this->doing = $doing;
+
+        return $this;
+    }
+
+    public function getDatedoing(): ?\DateTimeInterface
+    {
+        return $this->datedoing;
+    }
+
+    public function setDatedoing(?\DateTimeInterface $datedoing): self
+    {
+        $this->datedoing = $datedoing;
+
+        return $this;
+    }
+
+    public function getDone(): ?bool
+    {
+        return $this->done;
+    }
+
+    public function setDone(?bool $done): self
+    {
+        $this->done = $done;
+
+        return $this;
+    }
+
+    public function getDatedone(): ?\DateTimeInterface
+    {
+        return $this->datedone;
+    }
+
+    public function setDatedone(?\DateTimeInterface $datedone): self
+    {
+        $this->datedone = $datedone;
 
         return $this;
     }

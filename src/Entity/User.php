@@ -250,6 +250,7 @@ class User implements UserInterface
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Task", mappedBy="user")
+     * @ApiSubresource()
      */
     private $affectedTasks;
 

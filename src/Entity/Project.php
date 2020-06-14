@@ -90,14 +90,14 @@ class Project implements CreatorEntityInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"get-Project","get-Teams-With-Projects","get-Owner"})
+     * @Groups({"get-Project","get-Teams-With-Projects","get-Owner","get-Task-with-comments"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank()
-     * @Groups({"create-Project","get-Project","get-Teams-With-Projects"})
+     * @Groups({"create-Project","get-Project","get-Teams-With-Projects","get-Task-with-comments"})
      */
     private $projectName;
 
