@@ -98,7 +98,7 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"get-Users-datatable","get-Owner","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task-with-comments"})
+     * @Groups({"get-Users-datatable","get-Owner","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task-with-comments","get-Task-with-Bugs"})
      */
     private $id;
 
@@ -106,7 +106,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank(groups={"create-User"})
      * @Assert\Length(min=6, max=255, groups={"create-User"})
-     * @Groups({"put-user","create-User","get-Users-datatable","get-Owner","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task-with-comments"})
+     * @Groups({"put-user","create-User","get-Users-datatable","get-Owner","get-Teams-Created-By-User","get-Users-Of-Team","get-Project","get-Task-with-comments","get-Task-with-Bugs"})
      */
     private $username;
 
@@ -246,6 +246,11 @@ class User implements UserInterface
      */
     private $affectedTasks;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Bug", mappedBy="created_by", orphanRemoval=true)
+     */
+    private $bugs;
+
     public function __construct()
     {
         $this->createdTeams = new ArrayCollection();
@@ -255,6 +260,7 @@ class User implements UserInterface
         $this->tasks = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->affectedTasks = new ArrayCollection();
+        $this->bugs = new ArrayCollection();
     }
     
 
@@ -607,6 +613,37 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($affectedTask->getUser() === $this) {
                 $affectedTask->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Bug[]
+     */
+    public function getBugs(): Collection
+    {
+        return $this->bugs;
+    }
+
+    public function addBug(Bug $bug): self
+    {
+        if (!$this->bugs->contains($bug)) {
+            $this->bugs[] = $bug;
+            $bug->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBug(Bug $bug): self
+    {
+        if ($this->bugs->contains($bug)) {
+            $this->bugs->removeElement($bug);
+            // set the owning side to null (unless already changed)
+            if ($bug->getCreatedBy() === $this) {
+                $bug->setCreatedBy(null);
             }
         }
 

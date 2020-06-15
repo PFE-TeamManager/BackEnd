@@ -148,10 +148,17 @@ class Task implements CreatorEntityInterface
      */
     private $datedone;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Bug", mappedBy="IdTask", orphanRemoval=true)
+     * @ApiSubresource()
+     */
+    private $bugs;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
         $this->labels = new ArrayCollection();
+        $this->bugs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -381,6 +388,37 @@ class Task implements CreatorEntityInterface
     public function setDatedone(?\DateTimeInterface $datedone): self
     {
         $this->datedone = $datedone;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Bug[]
+     */
+    public function getBugs(): Collection
+    {
+        return $this->bugs;
+    }
+
+    public function addBug(Bug $bug): self
+    {
+        if (!$this->bugs->contains($bug)) {
+            $this->bugs[] = $bug;
+            $bug->setIdTask($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBug(Bug $bug): self
+    {
+        if ($this->bugs->contains($bug)) {
+            $this->bugs->removeElement($bug);
+            // set the owning side to null (unless already changed)
+            if ($bug->getIdTask() === $this) {
+                $bug->setIdTask(null);
+            }
+        }
 
         return $this;
     }
