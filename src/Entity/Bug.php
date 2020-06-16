@@ -210,6 +210,16 @@ class Bug implements CreatorEntityInterface
         return $this;
     }
 
+    /**
+     * @return \DateTime
+     * @Groups({"get-Task-with-Bugs"})
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+
     public function getEnabled(): ?bool
     {
         return $this->enabled;
