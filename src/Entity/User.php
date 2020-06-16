@@ -251,6 +251,12 @@ class User implements UserInterface
      */
     private $bugs;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Bug", mappedBy="user")
+     * @ApiSubresource()
+     */
+    private $affectedBugs;
+
     public function __construct()
     {
         $this->createdTeams = new ArrayCollection();
@@ -261,6 +267,7 @@ class User implements UserInterface
         $this->comments = new ArrayCollection();
         $this->affectedTasks = new ArrayCollection();
         $this->bugs = new ArrayCollection();
+        $this->affectedBugs = new ArrayCollection();
     }
     
 
@@ -644,6 +651,37 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($bug->getCreatedBy() === $this) {
                 $bug->setCreatedBy(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Bug[]
+     */
+    public function getAffectedBugs(): Collection
+    {
+        return $this->affectedBugs;
+    }
+
+    public function addAffectedBug(Bug $affectedBug): self
+    {
+        if (!$this->affectedBugs->contains($affectedBug)) {
+            $this->affectedBugs[] = $affectedBug;
+            $affectedBug->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAffectedBug(Bug $affectedBug): self
+    {
+        if ($this->affectedBugs->contains($affectedBug)) {
+            $this->affectedBugs->removeElement($affectedBug);
+            // set the owning side to null (unless already changed)
+            if ($affectedBug->getUser() === $this) {
+                $affectedBug->setUser(null);
             }
         }
 
