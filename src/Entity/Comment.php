@@ -41,7 +41,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *         }
  *     },
  *     denormalizationContext={
- *         "groups"={"create-Comment"}
+ *         "groups"={"create-Comment-Task","create-Comment-Bug"}
  *     }
  * )
  * @ORM\Entity(repositoryClass="App\Repository\CommentRepository")
@@ -59,9 +59,9 @@ class Comment implements CreatorEntityInterface
     private $id;
 
     /**
-     * @Groups({"get-Task-with-comments","create-Comment","get-Comment"})
+     * @Groups({"get-Task-with-comments","create-Comment-Task","get-Comment","create-Comment-Bug"})
      * @ORM\Column(type="text")
-     * @Assert\NotBlank(groups={"create-Comment"})
+     * @Assert\NotBlank(groups={"create-Comment-Task"})
      */
     private $content;
 
@@ -73,9 +73,8 @@ class Comment implements CreatorEntityInterface
     private $created_by;
 
     /**
-     * @Groups({"create-Comment"})
+     * @Groups({"create-Comment-Task"})
      * @ORM\ManyToOne(targetEntity="App\Entity\Task", inversedBy="comments")
-     * @ORM\JoinColumn(nullable=false)
      */
     private $Task;
 
@@ -84,6 +83,12 @@ class Comment implements CreatorEntityInterface
      * @ORM\Column(type="boolean")
      */
     private $enabled;
+    
+    /**
+     * @Groups({"create-Comment-Bug"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Bug", inversedBy="comments")
+     */
+    private $Bug;
 
     public function getId(): ?int
     {
@@ -159,6 +164,18 @@ class Comment implements CreatorEntityInterface
     public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    public function getBug(): ?Bug
+    {
+        return $this->Bug;
+    }
+
+    public function setBug(?Bug $Bug): self
+    {
+        $this->Bug = $Bug;
 
         return $this;
     }
