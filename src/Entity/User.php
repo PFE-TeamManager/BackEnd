@@ -51,7 +51,7 @@ use App\Controller\UsersDatableAction;
  *      },
  *     itemOperations={
  *          "patch"={
- *             "access_control"="is_granted('ROLE_CHEF_PROJET')",
+ *             "access_control"="is_granted('ROLE_MEMBRE')",
  *             "input_formats"={"json"={"application/json"}},
  *             "method"="PATCH",
  *             "denormalization_context"={
@@ -256,6 +256,12 @@ class User implements UserInterface
      * @ApiSubresource()
      */
     private $affectedBugs;
+
+    /**
+     * @Groups({"patch-user","get-Owner"})
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $description;
 
     public function __construct()
     {
@@ -684,6 +690,18 @@ class User implements UserInterface
                 $affectedBug->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
 
         return $this;
     }
