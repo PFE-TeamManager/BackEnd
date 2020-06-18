@@ -60,13 +60,13 @@ class Bug implements CreatorEntityInterface
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(groups={"create-Bug"})
-     * @Groups({"get-Task-with-Bugs","create-Bug"})
+     * @Groups({"get-Task-with-Bugs","create-Bug","get-Task-with-comments"})
      */
     private $BugTitle;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"get-Task-with-Bugs","create-Bug"})
+     * @Groups({"get-Task-with-Bugs","create-Bug","get-Task-with-comments"})
      */
     private $BugDescription;
 

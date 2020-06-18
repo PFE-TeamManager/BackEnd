@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,8 +15,17 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Controller\TasksUserAction;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
 
 /**
+ * @ApiFilter(
+ *     SearchFilter::class,
+ *     properties={
+ *         "TaskTitle": "partial",
+ *         "bug.BugTitle": "partial"
+ *     }
+ * )
  * @ApiResource(
  *           attributes={
  *              "normalization_context"={"groups"={"get-Task-with-comments"}},
@@ -149,6 +159,7 @@ class Task implements CreatorEntityInterface
     private $datedone;
 
     /**
+     * @Groups({"get-Task-with-comments"})
      * @ORM\OneToMany(targetEntity="App\Entity\Bug", mappedBy="IdTask", orphanRemoval=true)
      * @ApiSubresource()
      */
