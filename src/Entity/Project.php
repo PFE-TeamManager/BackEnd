@@ -53,7 +53,7 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
  * })
  * @ApiResource(
  *     attributes={
- *         "order"={"createdAt": "DESC"}, "maximum_items_per_page"=4
+ *         "order"={"createdAt": "DESC"}, "maximum_items_per_page"=3
  *     },
  *     collectionOperations={
  *       "post"={
