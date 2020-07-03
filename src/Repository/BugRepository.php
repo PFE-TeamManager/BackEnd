@@ -19,6 +19,17 @@ class BugRepository extends ServiceEntityRepository
         parent::__construct($registry, Bug::class);
     }
 
+    public function countBugsWithProjects(){
+        return $this->createQueryBuilder('b')
+                    ->select(" COUNT(b.id) as countBug")
+                    ->leftJoin('b.IdProject', 'p')
+                    ->addSelect('p.id as idProject,p.projectName,p.enabled as projectenabled')
+                    ->orderBy('b.createdAt', 'DESC')
+                    ->groupBy('p.projectName')
+                    ->getQuery()
+                    ->getResult();
+    }
+
     // /**
     //  * @return Bug[] Returns an array of Bug objects
     //  */

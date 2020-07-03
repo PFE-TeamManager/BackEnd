@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Task;
+use App\Entity\Bug;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -45,6 +46,33 @@ class DashboardController extends AbstractController
             //"dataCountTasksProjects" => (isset($data) ? $data : []),
             "dataProjectName" => $projectName,
             "dataCountTasks" => $countTasks
+        );
+
+        return new JsonResponse($response);
+    }
+
+    /**
+     * @Route("/api/dashboard/projects/bugs", name="dashboard_projects_bugs")
+     */
+    public function dashboardProjectsBugs()
+    {
+        $data = $this->data;
+        $projectName = [];
+        $countBugs = [];
+        $bugRepository = $this->entityManager->getRepository(Bug::class);
+        $bugsWithProjects = $bugRepository->countBugsWithProjects();
+
+        foreach($bugsWithProjects as $key => $value){
+            // $data[$key]['projectName'] = $value["projectName"];
+            // $data[$key]['countTasks'] = $value["countTask"];
+            array_push($projectName,$value["projectName"]);
+            array_push($countBugs,$value["countBug"]);
+        }
+
+        $response = array(
+            //"dataCountTasksProjects" => (isset($data) ? $data : []),
+            "dataProjectName" => $projectName,
+            "dataCountBugs" => $countBugs
         );
 
         return new JsonResponse($response);
