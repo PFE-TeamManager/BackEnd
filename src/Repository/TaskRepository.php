@@ -19,6 +19,41 @@ class TaskRepository extends ServiceEntityRepository
         parent::__construct($registry, Task::class);
     }
 
+    public function countTasksWithProjects(){
+        return $this->createQueryBuilder('t')
+                    ->select(" COUNT(t.id) as countTask")
+                    ->leftJoin('t.IdProject', 'p')
+                    ->addSelect('p.id as idProject,p.projectName,p.enabled as projectenabled')
+                    ->orderBy('t.createdAt', 'DESC')
+                    ->groupBy('p.projectName')
+                    ->getQuery()
+                    ->getResult();
+    }
+
+    public function countTasksWithStateToDo(){
+        return $this->createQueryBuilder('t')
+                    ->select(" COUNT(t.id) as countTaskToDo")
+                    ->where('t.ToDo = 1')
+                    ->getQuery()
+                    ->getResult();
+    }
+
+    public function countTasksWithStateDoing(){
+        return $this->createQueryBuilder('t')
+                    ->select(" COUNT(t.id) as countTaskDoing")
+                    ->where('t.doing = 1')
+                    ->getQuery()
+                    ->getResult();
+    }
+
+    public function countTasksWithStateDone(){
+        return $this->createQueryBuilder('t')
+                    ->select(" COUNT(t.id) as countTaskDone")
+                    ->where('t.done = 1')
+                    ->getQuery()
+                    ->getResult();
+    }
+
     // /**
     //  * @return Task[] Returns an array of Task objects
     //  */

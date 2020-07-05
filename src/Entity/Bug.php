@@ -3,61 +3,49 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Interfaces\CreatorEntityInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
-use App\Controller\TasksUserAction;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
 
 /**
- * @ApiFilter(
- *     SearchFilter::class,
- *     properties={
- *         "TaskTitle": "partial",
- *         "bug.BugTitle": "partial"
- *     }
- * )
  * @ApiResource(
  *           attributes={
- *              "normalization_context"={"groups"={"get-Task-with-comments"}},
+ *              "normalization_context"={"groups"={"get-Task-with-Bugs"}},
  *              "order"={"createdAt": "DESC"}, "maximum_items_per_page"=6
  *           },
  *           collectionOperations={
  *               "post"={
- *                   "security"="is_granted('ROLE_CHEF_PROJET')", "security_message"="Only CHEF can add projects.",
- *                   "denormalization_context"={ "groups"={"create-Task"} },
- *                   "normalization_context"={  "groups"={"get-Task-with-comments"}  }
+ *                   "security"="is_granted('ROLE_DEV')", "security_message"="Sorry, but you should be a developper.",
+ *                   "denormalization_context"={ "groups"={"create-Bug"} },
+ *                   "normalization_context"={  "groups"={"get-Task-with-Bugs"}  }
  *                },
  *               "get"={
  *                   "security"="is_granted('ROLE_DEV')", "security_message"="Sorry, but you should be a developper.",
- *                   "normalization_context"={  "groups"={"get-Task-with-comments"}  }
+ *                   "normalization_context"={  "groups"={"get-Task-with-Bugs"}  }
  *               }
  *           },
  *           itemOperations={
  *              "get"={
  *                  "security"="is_granted('ROLE_DEV')", "security_message"="Sorry, but you should be a developper.",
- *                  "normalization_context"={  "groups"={"get-Task-with-comments"}  }
+ *                  "normalization_context"={  "groups"={"get-Task-with-Bugs"}  }
  *              },
  *             "patch"={
  *                 "access_control"="is_granted('ROLE_DEV')",
  *                 "input_formats"={"json"={"application/json"}},
  *                 "method"="PATCH",
- *                 "normalization_context"={   "groups"={"get-Task-with-comments"}  }
+ *                 "normalization_context"={   "groups"={"get-Task-with-Bugs"}  }
  *              }
  *           }
  * )
- * @ORM\Entity(repositoryClass="App\Repository\TaskRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\BugRepository")
  */
-class Task implements CreatorEntityInterface
+class Bug implements CreatorEntityInterface
 {
     use TimestampableEntity;//this to generate created_At and updated_At
 
@@ -65,111 +53,101 @@ class Task implements CreatorEntityInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"get-Task-with-comments"})
+     * @Groups({"get-Task-with-Bugs"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank(groups={"create-Task"})
-     * @Groups({"get-Task-with-comments","create-Task"})
+     * @Assert\NotBlank(groups={"create-Bug"})
+     * @Groups({"get-Task-with-Bugs","create-Bug","get-Task-with-comments"})
      */
-    private $TaskTitle;
+    private $BugTitle;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"get-Task-with-comments","create-Task"})
+     * @Groups({"get-Task-with-Bugs","create-Bug","get-Task-with-comments"})
      */
-    private $TaskDescription;
+    private $BugDescription;
 
     /**
-     * @Groups({"get-Task-with-comments","create-Task"})
-     * @ORM\ManyToOne(targetEntity="App\Entity\Project", inversedBy="tasks")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Task", inversedBy="bugs")
+     * @Groups({"create-Bug"})
      * @ORM\JoinColumn(nullable=false)
      */
-    private $IdProject;
+    private $IdTask;
 
     /**
-     * @Groups({"get-Task-with-comments"})
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="tasks")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="bugs")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"get-Task-with-Bugs"})
      */
     private $created_by;
 
     /**
-     * @Groups({"get-Task-with-comments"})
      * @ORM\Column(type="boolean")
+     * @Groups({"get-Task-with-Bugs"})
      */
     private $enabled;
 
     /**
-     * @Groups({"get-Task-with-comments"})
-     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="Task", orphanRemoval=true)
+     * @Groups({"get-Task-with-Bugs"})
+     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="Bug")
      * @ApiSubresource()
      */
     private $comments;
 
     /**
-     * @Groups({"create-Task","get-Task-with-comments"})
-     * @ORM\ManyToMany(targetEntity="App\Entity\Labels", inversedBy="tasks")
-     * @ApiSubresource()
-     */
-    private $labels;
-
-    /**
-     * @Groups({"get-Task-with-comments"})
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="affectedTasks")
+     * @Groups({"get-Task-with-Bugs"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="affectedBugs")
      */
     private $user;
 
     /**
-     * @Groups({"get-Task-with-comments"})
+     * @Groups({"get-Task-with-Bugs"})
      * @ORM\Column(type="boolean", nullable=true)
      */
     private $ToDo;
 
     /**
-     * @Groups({"get-Task-with-comments"})
+     * @Groups({"get-Task-with-Bugs"})
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $ToDoDate;
 
     /**
-     * @Groups({"get-Task-with-comments"})
+     * @Groups({"get-Task-with-Bugs"})
      * @ORM\Column(type="boolean", nullable=true)
      */
     private $doing;
 
     /**
-     * @Groups({"get-Task-with-comments"})
+     * @Groups({"get-Task-with-Bugs"})
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $datedoing;
 
     /**
-     * @Groups({"get-Task-with-comments"})
+     * @Groups({"get-Task-with-Bugs"})
      * @ORM\Column(type="boolean", nullable=true)
      */
     private $done;
 
     /**
-     * @Groups({"get-Task-with-comments"})
+     * @Groups({"get-Task-with-Bugs"})
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $datedone;
 
     /**
-     * @Groups({"get-Task-with-comments"})
-     * @ORM\OneToMany(targetEntity="App\Entity\Bug", mappedBy="IdTask", orphanRemoval=true)
-     * @ApiSubresource()
+     * @Groups({"create-Bug","get-Task-with-Bugs"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Project", inversedBy="bugs")
      */
-    private $bugs;
+    private $IdProject;
 
     public function __construct()
     {
         $this->comments = new ArrayCollection();
-        $this->labels = new ArrayCollection();
-        $this->bugs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -177,45 +155,45 @@ class Task implements CreatorEntityInterface
         return $this->id;
     }
 
-    public function getTaskTitle(): ?string
+    public function getBugTitle(): ?string
     {
-        return $this->TaskTitle;
+        return $this->BugTitle;
     }
 
-    public function setTaskTitle(string $TaskTitle): self
+    public function setBugTitle(string $BugTitle): self
     {
-        $this->TaskTitle = $TaskTitle;
+        $this->BugTitle = $BugTitle;
 
         return $this;
     }
 
-    public function getTaskDescription(): ?string
+    public function getBugDescription(): ?string
     {
-        return $this->TaskDescription;
+        return $this->BugDescription;
     }
 
-    public function setTaskDescription(?string $TaskDescription): self
+    public function setBugDescription(?string $BugDescription): self
     {
-        $this->TaskDescription = $TaskDescription;
+        $this->BugDescription = $BugDescription;
 
         return $this;
     }
 
-    public function getIdProject(): ?Project
+    public function getIdTask(): ?Task
     {
-        return $this->IdProject;
+        return $this->IdTask;
     }
 
-    public function setIdProject(?Project $IdProject): self
+    public function setIdTask(?Task $IdTask): self
     {
-        $this->IdProject = $IdProject;
+        $this->IdTask = $IdTask;
 
         return $this;
     }
 
     /**
      * @return User
-     * @Groups({"get-Task-with-comments"})
+     * @Groups({"get-Task-with-Bugs"})
      */
     public function getCreatedBy(): ?User
     {
@@ -234,21 +212,13 @@ class Task implements CreatorEntityInterface
 
     /**
      * @return \DateTime
-     * @Groups({"get-Task-with-comments"})
+     * @Groups({"get-Task-with-Bugs"})
      */
     public function getCreatedAt()
     {
         return $this->createdAt;
     }
 
-    /**
-     * @return \DateTime
-     * @Groups({"get-Task-with-comments"})
-     */
-    public function getUpdatedAt()
-    {
-        return $this->updatedAt;
-    }
 
     public function getEnabled(): ?bool
     {
@@ -274,7 +244,7 @@ class Task implements CreatorEntityInterface
     {
         if (!$this->comments->contains($comment)) {
             $this->comments[] = $comment;
-            $comment->setTask($this);
+            $comment->setBug($this);
         }
 
         return $this;
@@ -285,40 +255,14 @@ class Task implements CreatorEntityInterface
         if ($this->comments->contains($comment)) {
             $this->comments->removeElement($comment);
             // set the owning side to null (unless already changed)
-            if ($comment->getTask() === $this) {
-                $comment->setTask(null);
+            if ($comment->getBug() === $this) {
+                $comment->setBug(null);
             }
         }
 
         return $this;
     }
 
-    /**
-     * @return Collection|Labels[]
-     */
-    public function getLabels(): Collection
-    {
-        return $this->labels;
-    }
-
-    public function addLabel(Labels $label): self
-    {
-        if (!$this->labels->contains($label)) {
-            $this->labels[] = $label;
-        }
-
-        return $this;
-    }
-
-    public function removeLabel(Labels $label): self
-    {
-        if ($this->labels->contains($label)) {
-            $this->labels->removeElement($label);
-        }
-
-        return $this;
-    }
- 
     public function getUser(): ?User
     {
         return $this->user;
@@ -336,7 +280,7 @@ class Task implements CreatorEntityInterface
         return $this->ToDo;
     }
 
-    public function setToDo(bool $ToDo): self
+    public function setToDo(?bool $ToDo): self
     {
         $this->ToDo = $ToDo;
 
@@ -360,7 +304,7 @@ class Task implements CreatorEntityInterface
         return $this->doing;
     }
 
-    public function setDoing(bool $doing): self
+    public function setDoing(?bool $doing): self
     {
         $this->doing = $doing;
 
@@ -403,33 +347,14 @@ class Task implements CreatorEntityInterface
         return $this;
     }
 
-    /**
-     * @return Collection|Bug[]
-     */
-    public function getBugs(): Collection
+    public function getIdProject(): ?Project
     {
-        return $this->bugs;
+        return $this->IdProject;
     }
 
-    public function addBug(Bug $bug): self
+    public function setIdProject(?Project $IdProject): self
     {
-        if (!$this->bugs->contains($bug)) {
-            $this->bugs[] = $bug;
-            $bug->setIdTask($this);
-        }
-
-        return $this;
-    }
-
-    public function removeBug(Bug $bug): self
-    {
-        if ($this->bugs->contains($bug)) {
-            $this->bugs->removeElement($bug);
-            // set the owning side to null (unless already changed)
-            if ($bug->getIdTask() === $this) {
-                $bug->setIdTask(null);
-            }
-        }
+        $this->IdProject = $IdProject;
 
         return $this;
     }

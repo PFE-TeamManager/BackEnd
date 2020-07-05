@@ -53,7 +53,7 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
  * })
  * @ApiResource(
  *     attributes={
- *         "order"={"createdAt": "DESC"}, "maximum_items_per_page"=4
+ *         "order"={"createdAt": "DESC"}, "maximum_items_per_page"=3
  *     },
  *     collectionOperations={
  *       "post"={
@@ -90,14 +90,14 @@ class Project implements CreatorEntityInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"get-Project","get-Teams-With-Projects","get-Owner","get-Task-with-comments"})
+     * @Groups({"get-Project","get-Teams-With-Projects","get-Owner","get-Task-with-comments","get-Task-with-Bugs"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank()
-     * @Groups({"create-Project","get-Project","get-Teams-With-Projects","get-Task-with-comments"})
+     * @Groups({"create-Project","get-Project","get-Teams-With-Projects","get-Task-with-comments","get-Task-with-Bugs"})
      */
     private $projectName;
 
@@ -126,10 +126,17 @@ class Project implements CreatorEntityInterface
      */
     private $tasks;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Bug", mappedBy="IdProject")
+     * @ApiSubresource()
+     */
+    private $bugs;
+
     public function __construct()
     {
         $this->Teams = new ArrayCollection();
         $this->tasks = new ArrayCollection();
+        $this->bugs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -254,6 +261,37 @@ class Project implements CreatorEntityInterface
             // set the owning side to null (unless already changed)
             if ($task->getIdProject() === $this) {
                 $task->setIdProject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Bug[]
+     */
+    public function getBugs(): Collection
+    {
+        return $this->bugs;
+    }
+
+    public function addBug(Bug $bug): self
+    {
+        if (!$this->bugs->contains($bug)) {
+            $this->bugs[] = $bug;
+            $bug->setIdProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBug(Bug $bug): self
+    {
+        if ($this->bugs->contains($bug)) {
+            $this->bugs->removeElement($bug);
+            // set the owning side to null (unless already changed)
+            if ($bug->getIdProject() === $this) {
+                $bug->setIdProject(null);
             }
         }
 
