@@ -30,6 +30,30 @@ class TaskRepository extends ServiceEntityRepository
                     ->getResult();
     }
 
+    public function countTasksWithStateToDo(){
+        return $this->createQueryBuilder('t')
+                    ->select(" COUNT(t.id) as countTaskToDo")
+                    ->where('t.ToDo = 1')
+                    ->getQuery()
+                    ->getResult();
+    }
+
+    public function countTasksWithStateDoing(){
+        return $this->createQueryBuilder('t')
+                    ->select(" COUNT(t.id) as countTaskDoing")
+                    ->where('t.doing = 1')
+                    ->getQuery()
+                    ->getResult();
+    }
+
+    public function countTasksWithStateDone(){
+        return $this->createQueryBuilder('t')
+                    ->select(" COUNT(t.id) as countTaskDone")
+                    ->where('t.done = 1')
+                    ->getQuery()
+                    ->getResult();
+    }
+
     // /**
     //  * @return Task[] Returns an array of Task objects
     //  */

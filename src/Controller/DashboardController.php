@@ -78,4 +78,35 @@ class DashboardController extends AbstractController
         return new JsonResponse($response);
     }
 
+    /**
+     * @Route("/api/dashboard/projects/tasks/state", name="dashboard_projects_tasks_state")
+     */
+    public function dashboardProjectsTasksState()
+    {
+        $data = $this->data;
+        $dataLabels = [];
+        $dataSeries = [];
+        $taskRepository = $this->entityManager->getRepository(Task::class);
+
+        $tasksWithStateToDo = $taskRepository->countTasksWithStateToDo();
+        
+        $tasksWithStateDoing = $taskRepository->countTasksWithStateDoing();
+        $tasksWithStateDone = $taskRepository->countTasksWithStateDone();
+
+        array_push($dataLabels,"Task To Do");
+        array_push($dataSeries,(int) $tasksWithStateToDo[0]["countTaskToDo"]);
+
+        array_push($dataLabels,"Task Doing");
+        array_push($dataSeries,(int) $tasksWithStateDoing[0]["countTaskDoing"]);
+
+        array_push($dataLabels,"Task Done");
+        array_push($dataSeries,(int) $tasksWithStateDone[0]["countTaskDone"]);
+
+        $response = array(
+            "dataLabels" => $dataLabels,
+            "dataSeries" => $dataSeries
+        );
+
+        return new JsonResponse($response);
+    }
 }
