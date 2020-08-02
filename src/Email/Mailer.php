@@ -28,6 +28,7 @@ class Mailer
 
     public function sendConfirmationEmail(User $user)
     {
+        //dd($user->getEmail());
         $body = $this->twig->render(
             'email/confirmation.html.twig',
             [

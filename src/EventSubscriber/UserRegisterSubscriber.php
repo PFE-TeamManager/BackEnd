@@ -56,10 +56,8 @@ class UserRegisterSubscriber implements EventSubscriberInterface
 
             return;
         }
-
         
-
-//dd($passwordUser);
+        //dd($passwordUser);
         // It is a Membre, we need to hash password here
         $user->setPassword(
             $this->passwordEncoder->encodePassword($user, $user->getPassword())
