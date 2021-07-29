@@ -49,6 +49,8 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+        # The order of paths here is important, always keep the global one under so that it will not be 
+        # applied on all the links starting with /api
         - { path: ^/api/login,     roles: IS_AUTHENTICATED_ANONYMOUSLY }
         # - { path: ^/api,       roles: ROLE_MEMBRE }
     role_hierarchy:
