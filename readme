@@ -1,4 +1,5 @@
 This project is for API By Symfony5
+very useful docker : https://yoandev.co/un-environnement-de-développement-symfony-5-avec-docker-et-docker-compose/
 First : install The symfony CLI
 Second create the project : composer create-project symfony/skeleton my_project_name
 symfony check:req
